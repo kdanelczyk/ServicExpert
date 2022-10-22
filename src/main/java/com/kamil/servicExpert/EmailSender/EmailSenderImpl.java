@@ -36,7 +36,7 @@ public class EmailSenderImpl implements EmailSender{
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         
-        helper.setTo("kamil.danelczyk@onet.pl");
+        helper.setTo("kamil.danelczyk@gmail.com");
         helper.setSubject("ServicExpert reports!");
         helper.setText("<h1>weekly report about repairs and elements..</h1>", true);
         
