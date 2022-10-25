@@ -32,17 +32,11 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public boolean existsByUsername(String username) {
-		if (!userRepository.existsByUsername(username)) {
-			throw new ResourceNotFoundException("Not found User with username = " + username);
-		}
 		return userRepository.existsByUsername(username);
 	}
 
 	@Override
 	public boolean existsByEmail(String email) {
-		if (!userRepository.existsByEmail(email)) {
-			throw new ResourceNotFoundException("Not found User with email = " + email);
-		}
 		return userRepository.existsByEmail(email);
 	}
 
