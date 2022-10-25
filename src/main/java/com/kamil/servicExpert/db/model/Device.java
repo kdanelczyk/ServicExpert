@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,8 +17,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,19 +38,14 @@ public class Device {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column(name = "customerPhoneNumber")
-	@JsonProperty("customer_phone_number")
-	@NotNull(message = "customerPhoneNumber is required.")
+	@Column(name = "customer_phone_number")
 	private long customerPhoneNumber;
 
-	@Column(name = "nameOfCustomer")
-	@JsonProperty("name_of_customer")
-	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
+	@Column(name = "name_of_customer")
 	private String nameOfCustomer;
 
-	@Column(name = "dateOfReceipt")
+	@Column(name = "date_of_receipt")
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonProperty("date_of_receipt")
 	private Date dateOfReceipt;
 	
 	@Column(name = "repaired")
@@ -63,10 +54,8 @@ public class Device {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "type_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
 	private Type type;
 
 	@OneToMany(mappedBy = "device")
-	@JsonIgnore
 	private List<Repair> repairs;
 }

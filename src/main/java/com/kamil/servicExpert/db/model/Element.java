@@ -5,8 +5,6 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,8 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,31 +39,22 @@ public class Element {
 	private long id;
 	
 	@Column(name = "quantity")
-	@NotNull(message = "quantity is required.")
 	private int quantity;
 	
-	@Column(name = "criticalQuantity")
-	@JsonProperty("critical_quantity")
-	@NotNull(message = "criticalQuantity is required.")
+	@Column(name = "critical_quantity")
 	private int criticalQuantity;
 	
-	@Column(name = "nameOfElement")
-	@JsonProperty("name_of_element")
-	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
+	@Column(name = "nameO_of_element")
 	private String nameOfElement;
 	
-	@Column(name = "priceOfElement")
-	@JsonProperty("price_of_element")
-	@NotNull(message = "quantity is required.")
+	@Column(name = "price_of_element")
 	private float priceOfElement;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "type_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
 	private Type type;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "elements")
-	@JsonIgnore
 	private List<Repair> repairs;
 }

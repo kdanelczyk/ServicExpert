@@ -27,6 +27,8 @@ import com.kamil.servicExpert.model.Device.DeviceGetDetails;
 import com.kamil.servicExpert.model.Device.DevicePost;
 import com.kamil.servicExpert.service.DeviceService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
@@ -174,13 +176,13 @@ public class DeviceController {
 	@PostMapping("/types/{typeId}/devices")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Device> createDeviceForType(@PathVariable(value = "typeId") Long typeId,
-			@RequestBody DevicePost deviceRequest) {
+			@Valid @RequestBody DevicePost deviceRequest) {
 		return new ResponseEntity<>(deviceService.createDeviceForType(typeId, deviceMapper.deviceInputToDevice(deviceRequest)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/devices/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Device> updateDevice(@PathVariable("id") long id, @RequestBody Device deviceRequest) {
+	public ResponseEntity<Device> updateDevice(@PathVariable("id") long id, @Valid @RequestBody Device deviceRequest) {
 		if (deviceService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

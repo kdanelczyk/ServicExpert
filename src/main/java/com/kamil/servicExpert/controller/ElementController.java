@@ -30,6 +30,8 @@ import com.kamil.servicExpert.model.Element.ElementPost;
 import com.kamil.servicExpert.model.Repair.RepairGet;
 import com.kamil.servicExpert.service.ElementService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
@@ -163,14 +165,14 @@ public class ElementController {
 	@PostMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Element> createElementForType(@PathVariable(value = "typeId") Long typeId,
-			@RequestBody ElementPost elementRequest) {
+			@Valid @RequestBody ElementPost elementRequest) {
 		return new ResponseEntity<>(elementService.createElementForType(typeId, elementMapper.elementInputToElement(elementRequest)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/elements/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Element> updateElement(@PathVariable("id") long id,
-			@RequestBody Element elementRequest) {
+			@Valid @RequestBody Element elementRequest) {
 		if (elementService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -180,7 +182,7 @@ public class ElementController {
 	@PutMapping("/repairs/{repairId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Repair> addElement(@PathVariable(value = "repairId") Long repairId,
-			@RequestBody Element elementRequest) {
+			@Valid @RequestBody Element elementRequest) {
 		return new ResponseEntity<>(elementService.addElementToRepair(repairId, elementRequest), HttpStatus.OK);
 	}
 

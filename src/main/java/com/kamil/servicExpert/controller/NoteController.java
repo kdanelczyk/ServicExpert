@@ -26,6 +26,8 @@ import com.kamil.servicExpert.model.Note.NoteGet;
 import com.kamil.servicExpert.model.Note.NotePost;
 import com.kamil.servicExpert.service.NoteService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
@@ -110,19 +112,19 @@ public class NoteController {
 	@PostMapping("/users/{userId}/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Note> createNoteForUser(@PathVariable(value = "userId") Long userId,
-			@RequestBody NotePost noteRequest) {
+			@Valid @RequestBody NotePost noteRequest) {
 		return new ResponseEntity<>(noteService.createNoteForUser(userId, noteMapper.noteInputToNote(noteRequest)),HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> createNote(@RequestBody NotePost noteRequest) {
+	public ResponseEntity<Note> createNote(@Valid @RequestBody NotePost noteRequest) {
 		return new ResponseEntity<>(noteService.createNote(noteMapper.noteInputToNote(noteRequest)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/notes/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> updateNote(@PathVariable("id") long id, @RequestBody Note noteRequest) {
+	public ResponseEntity<Note> updateNote(@PathVariable("id") long id, @Valid @RequestBody Note noteRequest) {
 		if (noteService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

@@ -26,6 +26,8 @@ import com.kamil.servicExpert.model.Type.TypeGetDetails;
 import com.kamil.servicExpert.model.Type.TypePost;
 import com.kamil.servicExpert.service.TypeService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
@@ -100,13 +102,13 @@ public class TypeController {
 
 	@PostMapping("/types")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Type> createType(@RequestBody TypePost typeRequest) {
+	public ResponseEntity<Type> createType(@Valid @RequestBody TypePost typeRequest) {
 		return new ResponseEntity<>(typeService.createType(typeMapper.typeInputToType(typeRequest)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/types/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Type> updateType(@PathVariable("id") long id, @RequestBody Type type) {
+	public ResponseEntity<Type> updateType(@PathVariable("id") long id, @Valid @RequestBody Type type) {
 		if (typeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

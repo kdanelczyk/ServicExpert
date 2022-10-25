@@ -27,6 +27,8 @@ import com.kamil.servicExpert.model.Repair.RepairGetDetails;
 import com.kamil.servicExpert.model.Repair.RepairPost;
 import com.kamil.servicExpert.service.RepairService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
@@ -139,13 +141,13 @@ public class RepairController {
 	@PostMapping("/devices/{deviceId}/users/{userId}/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Repair> createRepair(@PathVariable(value = "deviceId") Long deviceId,
-			@PathVariable(value = "userId") Long userId, @RequestBody RepairPost repairRequest) {
+			@PathVariable(value = "userId") Long userId, @Valid @RequestBody RepairPost repairRequest) {
 		return new ResponseEntity<>(repairService.createRepair(deviceId, userId, repairMapper.repairInputToRepair(repairRequest)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/repairs/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Repair> updateRepair(@PathVariable("id") long id, @RequestBody Repair repairRequest) {
+	public ResponseEntity<Repair> updateRepair(@PathVariable("id") long id, @Valid @RequestBody Repair repairRequest) {
 		if (repairService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
