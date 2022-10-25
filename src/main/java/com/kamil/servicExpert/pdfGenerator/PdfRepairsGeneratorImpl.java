@@ -3,6 +3,7 @@ package com.kamil.servicExpert.pdfGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -55,9 +56,19 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 		cellForTotals.setPhrase(new Phrase("profit", font));
 		tableForTotals.addCell(cellForTotals);
 		
-		int priceOfRepairs = 0, costOfElements = 0;
+		double priceOfRepairs = repairList.stream()
+				.map(repair -> repair.getCost())
+				.mapToDouble(Float::doubleValue)
+				.sum();
 		
-		for (Repair repair : repairList) {
+		double costOfElements = repairList.stream()
+				.map(repair -> repair.getElements().stream()
+						.map(element -> element.getPriceOfElement())
+						.mapToDouble(Float::doubleValue)
+						.sum())
+				.collect(Collectors.summingDouble(Double::doubleValue));
+		
+		repairList.stream().forEach(repair -> {
 			PdfPTable tableForRepairs = new PdfPTable(5);
 			tableForRepairs.setWidthPercentage(100);
 			tableForRepairs.setWidths(new int[] { 2, 2, 2, 2, 2 });
@@ -102,15 +113,15 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 			tableForRepairs.addCell(String.valueOf(repair.getDevice().getType().getNameOfType()));
 			tableForRepairs.addCell(String.valueOf(repair.getCost()));
 			tableForRepairs.addCell(String.valueOf(repair.getUser().getName()));
-			for (int i = 0; i < repair.getElements().size(); i++) {
-				tableForElements.addCell(String.valueOf(repair.getElements().get(i).getNameOfElement()));
-				tableForElements.addCell(String.valueOf(repair.getElements().get(i).getPriceOfElement()));
-				costOfElements += repair.getElements().get(i).getPriceOfElement();
-			}
+			
+			repair.getElements().stream().forEach(element -> {
+				tableForElements.addCell(String.valueOf(element.getNameOfElement()));
+				tableForElements.addCell(String.valueOf(element.getPriceOfElement()));
+			});
 			report.add(tableForRepairs);
 			report.add(tableForElements);
-		}
-		
+		});
+
 		tableForTotals.addCell(String.valueOf(priceOfRepairs));
 		tableForTotals.addCell(String.valueOf(costOfElements));
 		tableForTotals.addCell(String.valueOf(priceOfRepairs - costOfElements));
