@@ -24,6 +24,18 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 		
 		return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public final ResponseEntity<ErrorMessage> handleBadRequestException(Exception ex, WebRequest request)
+			throws Exception {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+				.timestamp(new Date())
+				.message(ex.getMessage())
+				.description(request.getDescription(false))
+				.build();
+		
+		return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.NOT_FOUND);
 
 	}
 
@@ -35,7 +47,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 				.description(request.getDescription(false)).build();
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-
 	}
 
 	@Override

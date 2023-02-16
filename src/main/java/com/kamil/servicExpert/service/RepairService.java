@@ -22,8 +22,6 @@ public interface RepairService {
 	
 	public List<Repair> findByUserId(Long userId);
 
-	public List<Repair> findRepairsByElementsId(Long elementId);
-
 	public List<Repair> findByDateCreated(Date dateCreated);
 	
 	public List<Repair> findAll();
@@ -33,6 +31,10 @@ public interface RepairService {
 	public Repair createRepair(Long deviceId, Long userId, Repair repair);
 	
 	public Repair updateRepair(Long id, Repair repair);
+	
+	public Repair addElementToRepair(Long repairId, Long elementId);
+	
+	public void deleteElementFromRepair(Long repairId, Long elementId);
 	
 	public void deleteById(Long id);
 	

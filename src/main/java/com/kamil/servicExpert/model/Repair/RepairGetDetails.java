@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kamil.servicExpert.model.Device.DeviceGet;
-import com.kamil.servicExpert.model.Element.ElementSlim;
+import com.kamil.servicExpert.model.UsedElement.UsedElementSlim;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +34,6 @@ public class RepairGetDetails {
 	@JsonProperty("device")
 	private DeviceGet device;
 	
-	@JsonProperty("elements")
-	private List<ElementSlim> elements;
+	@JsonProperty("usedElements")
+	private List<UsedElementSlim> usedElements;
 }

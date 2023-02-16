@@ -18,7 +18,7 @@ public class RepairMapperImpl implements RepairMapper{
 	DeviceMapper deviceMapper;
 	
 	@Autowired
-	ElementMapper elementMapper;
+	UsedElementMapper usedElementMapper;
 
 	@Override
 	public Repair repairInputToRepair(RepairPost repairPost) {
@@ -53,9 +53,9 @@ public class RepairMapperImpl implements RepairMapper{
 				.cost(repair.getCost())
 				.note(repair.getNote())
 				.device(deviceMapper.deviceToDeviceGet(repair.getDevice()))
-				.elements(repair.getElements()
+				.usedElements(repair.getUsedElements()
 						.stream()
-						.map(elementMapper::elementToElementSlim)
+						.map(usedElementMapper::usedElementToUsedElementSlim)
 						.collect(Collectors.toList()))
 				.build();
 	}

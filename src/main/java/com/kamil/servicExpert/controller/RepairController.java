@@ -76,10 +76,6 @@ public class RepairController {
 						.getAllRepairs())
 						.withRel("all-repairs"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(ElementController.class)
-						.getAllElementsByRepairId(id))
-						.withRel("elements-by-repair-id"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.updateRepair(id, repairService.findById(id).get()))
 						.withRel("update-repair"),
@@ -154,6 +150,13 @@ public class RepairController {
 		return new ResponseEntity<>(repairService.updateRepair(id, repairRequest), HttpStatus.OK);
 	}
 
+	@PutMapping("/repairs/{repairId}/elements/{elementId}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<Repair> addElement(@PathVariable(value = "repairId") Long repairId,
+			@PathVariable(value = "elementId") Long elementId) {
+		return new ResponseEntity<>(repairService.addElementToRepair(repairId, elementId), HttpStatus.OK);
+	}
+	
 	@DeleteMapping("/repairs/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<HttpStatus> deleteRepair(@PathVariable("id") long id) {
@@ -179,6 +182,14 @@ public class RepairController {
 	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<HttpStatus> deleteAllRepairs() {
 		repairService.deleteAll();
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@DeleteMapping("/repairs/{repairId}/elements/{elementId}")
+	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<HttpStatus> deleteElementFromRepair(@PathVariable(value = "repairId") Long repairId,
+			@PathVariable(value = "elementId") Long elementId) {
+		repairService.deleteElementFromRepair(repairId, elementId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

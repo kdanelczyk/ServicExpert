@@ -26,19 +26,13 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "elements")
-public class Element {
+@Table(name = "used_elements")
+public class UsedElement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
-	@Column(name = "quantity")
-	private int quantity;
-	
-	@Column(name = "critical_quantity")
-	private int criticalQuantity;
-	
+
 	@Column(name = "name_of_element")
 	private String nameOfElement;
 	
@@ -46,8 +40,7 @@ public class Element {
 	private float priceOfElement;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "type_id", nullable = false)
+	@JoinColumn(name = "repair_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private Type type;
-
+	private Repair repair;
 }

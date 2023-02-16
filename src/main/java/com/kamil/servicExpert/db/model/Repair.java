@@ -46,22 +46,7 @@ public class Repair {
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private User user;
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "repair_elements", joinColumns = { 
-			@JoinColumn(name = "repair_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "element_id") })
-	private List<Element> elements;
-	
-	public void addElement(Element element) {
-		this.elements.add(element);
-		element.getRepairs().add(this);
-	}
+	@OneToMany(mappedBy="repair")
+	private List<UsedElement> usedElements;
 
-	public void removeElement(long elementId) {
-		Element element = this.elements.stream().filter(t -> t.getId() == elementId).findFirst().orElse(null);
-		if (element != null) {
-			this.elements.remove(element);
-			element.getRepairs().remove(this);
-		}
-	}
 }

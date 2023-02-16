@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Device;
+import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.db.model.Repair;
+import com.kamil.servicExpert.db.model.UsedElement;
 import com.kamil.servicExpert.db.model.User;
+import com.kamil.servicExpert.exception.BadRequestException;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.RepairRepository;
+import com.kamil.servicExpert.repository.UsedElementRepository;
 
 @Service
 public class RepairServiceImpl implements RepairService{
@@ -24,6 +28,12 @@ public class RepairServiceImpl implements RepairService{
     
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private ElementService elementService;
+	
+	@Autowired
+	private UsedElementRepository usedElementRepository;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -49,11 +59,6 @@ public class RepairServiceImpl implements RepairService{
 	public List<Repair> findByUserId(Long userId) {
 		userService.existsById(userId);
 		return repairRepository.findByUserId(userId);
-	}
-
-	@Override
-	public List<Repair> findRepairsByElementsId(Long elementId) {
-		return repairRepository.findRepairsByElementsId(elementId);
 	}
 
 	@Override
@@ -97,6 +102,43 @@ public class RepairServiceImpl implements RepairService{
 		_repair.setCost(repair.getCost());
 		save(_repair);
 		return _repair;
+	}
+	
+	@Override
+	public Repair addElementToRepair(Long repairId, Long elementId) {
+		Repair repair = findById(repairId).get();
+		Element element = elementService.findById(elementId).get();
+
+		if(element.getQuantity() <= 0) {
+			throw new BadRequestException("Quantity is 0!");
+		}
+		element.setQuantity(element.getQuantity() - 1);
+		
+		repair.setCost(repair.getCost() + element.getPriceOfElement());
+		
+		UsedElement usedElement = usedElementRepository.save(UsedElement
+				.builder()
+				.nameOfElement(element.getNameOfElement())
+				.priceOfElement(element.getPriceOfElement())
+				.repair(repair)
+				.build());
+		List<UsedElement> usedElements = repair.getUsedElements();
+		usedElements.add(usedElement);
+		repair.setUsedElements(usedElements);
+		save(repair);
+		return repair;
+	}
+	
+	@Override
+	public void deleteElementFromRepair(Long repairId, Long elementId) {
+		Repair repair = findById(repairId).get();
+		UsedElement usedElement = repair.getUsedElements().stream().filter(t -> t.getId() == elementId).findFirst().orElse(null);
+		if (usedElement != null) {
+			repair.getUsedElements().remove(usedElement);
+			usedElementRepository.deleteById(elementId);
+
+		}
+		save(repair);
 	}
 
 	@Override

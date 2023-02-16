@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.db.model.Repair;
 import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.ElementRepository;
@@ -20,9 +19,6 @@ public class ElementServiceImpl implements ElementService{
 	
 	@Autowired
 	private TypeService typeService;
-
-	@Autowired
-	private RepairService repairService;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -42,32 +38,6 @@ public class ElementServiceImpl implements ElementService{
 	public List<Element> findByTypeId(long typeId) {
 		typeService.existsById(typeId);
 		return elementRepository.findByTypeId(typeId);
-	}
-
-	@Override
-	public List<Element> findByQuantity(int quantity) {
-		return elementRepository.findByQuantity(quantity);
-	}
-
-	@Override
-	public List<Element> findByPriceOfElement(int priceOfElement) {
-		return elementRepository.findByPriceOfElement(priceOfElement);
-	}
-
-	@Override
-	public List<Element> findByNameOfElement(String nameOfElement) {
-		return elementRepository.findByNameOfElement(nameOfElement);
-	}
-
-	@Override
-	public List<Element> findElementsByRepairId(Long repairId) {
-		repairService.existsById(repairId);
-		return elementRepository.findElementsByRepairsId(repairId);
-	}
-
-	@Override
-	public List<Repair> findRepairsByElementsId(Long id) {
-		return repairService.findRepairsByElementsId(id);
 	}
 
 	@Override
@@ -102,17 +72,6 @@ public class ElementServiceImpl implements ElementService{
 	}
 
 	@Override
-	public Repair addElementToRepair(Long repairId, Element element) {
-		Repair repair = repairService.findById(repairId).get();
-		Element _element = findById(element.getId()).get();
-		_element.setQuantity(_element.getQuantity() - 1);
-		repair.setCost(repair.getCost() + _element.getPriceOfElement());
-		repair.addElement(_element);
-		repairService.save(repair);
-		return repair;
-	}
-
-	@Override
 	public void deleteById(Long id) {
 		existsById(id);
 		elementRepository.deleteById(id);
@@ -129,10 +88,4 @@ public class ElementServiceImpl implements ElementService{
 		elementRepository.deleteByTypeId(typeId);
 	}
 
-	@Override
-	public void deleteElementFromRepair(Long repairId, Long elementId) {
-		Repair repair = repairService.findById(repairId).get();
-		repair.removeElement(elementId);
-		repairService.save(repair);
-	}
 }

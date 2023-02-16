@@ -23,11 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kamil.servicExpert.db.mapper.ElementMapper;
 import com.kamil.servicExpert.db.mapper.RepairMapper;
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.db.model.Repair;
 import com.kamil.servicExpert.model.Element.ElementGet;
 import com.kamil.servicExpert.model.Element.ElementGetDetails;
 import com.kamil.servicExpert.model.Element.ElementPost;
-import com.kamil.servicExpert.model.Repair.RepairGet;
 import com.kamil.servicExpert.service.ElementService;
 
 import jakarta.validation.Valid;
@@ -42,9 +40,6 @@ public class ElementController {
 	
 	@Autowired
 	private ElementMapper elementMapper;
-	
-	@Autowired
-	private RepairMapper repairMapper;
 
 	@GetMapping("/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -83,10 +78,6 @@ public class ElementController {
 						.withRel("all-elements"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
-						.getAllRepairsByElementId(id))
-						.withRel("repairs-by-element-id"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
 						.updateElement(id, elementService.findById(id).get()))
 						.withRel("update-element"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
@@ -120,48 +111,6 @@ public class ElementController {
 						.withRel("delete-elements_by_type_id")));
 	}
 
-	@GetMapping("/repairs/{repairId}/elements")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<ElementGet>> getAllElementsByRepairId(
-			@PathVariable(value = "repairId") Long repairId) {
-		if (elementService.findElementsByRepairId(repairId).isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-		return ResponseEntity.ok(CollectionModel.of(elementService.findElementsByRepairId(repairId)
-				.stream()
-				.map(elementMapper::elementToElementGet)
-				.collect(Collectors.toList()), 
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.getAllElementsByRepairId(repairId))
-						.withSelfRel(),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(RepairController.class)
-						.getRepairById(repairId))
-						.withRel("repair-by-id")));
-	}
-
-	@GetMapping("/elements/{elementId}/repairs")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<RepairGet>> getAllRepairsByElementId(
-			@PathVariable(value = "elementId") Long elementId) {
-		if (elementService.findRepairsByElementsId(elementId).isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-		return ResponseEntity.ok(CollectionModel.of(elementService.findRepairsByElementsId(elementId)
-				.stream()
-				.map(repairMapper::repairToRepairGet)
-				.collect(Collectors.toList()),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.getAllRepairsByElementId(elementId))
-						.withSelfRel(),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.getElementById(elementId))
-						.withRel("element-by-id")));
-	}
-
 	@PostMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Element> createElementForType(@PathVariable(value = "typeId") Long typeId,
@@ -177,13 +126,6 @@ public class ElementController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(elementService.updateElement(id, elementRequest), HttpStatus.OK);
-	}
-
-	@PutMapping("/repairs/{repairId}/elements")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Repair> addElement(@PathVariable(value = "repairId") Long repairId,
-			@Valid @RequestBody Element elementRequest) {
-		return new ResponseEntity<>(elementService.addElementToRepair(repairId, elementRequest), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/elements")
@@ -207,11 +149,4 @@ public class ElementController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@DeleteMapping("/repairs/{repairId}/elements/{elementId}")
-	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<HttpStatus> deleteElementFromRepair(@PathVariable(value = "repairId") Long repairId,
-			@PathVariable(value = "elementId") Long elementId) {
-		elementService.deleteElementFromRepair(repairId, elementId);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
 }
