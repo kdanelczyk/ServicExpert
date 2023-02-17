@@ -1,5 +1,6 @@
 package com.kamil.servicExpert.db.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.OnDelete;
@@ -27,7 +28,7 @@ public class Repair {
 	private long id;
 
 	@Column(name = "cost")
-	private float cost;
+	private BigDecimal cost;
 
 	@Column(name = "note")
 	private String note;

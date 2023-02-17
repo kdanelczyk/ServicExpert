@@ -114,7 +114,7 @@ public class RepairServiceImpl implements RepairService{
 		}
 		element.setQuantity(element.getQuantity() - 1);
 		
-		repair.setCost(repair.getCost() + element.getPriceOfElement());
+		repair.setCost(repair.getCost().add(element.getPriceOfElement()));
 		
 		UsedElement usedElement = usedElementRepository.save(UsedElement
 				.builder()

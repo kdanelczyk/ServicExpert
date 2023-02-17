@@ -1,5 +1,6 @@
 package com.kamil.servicExpert.model.Repair;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RepairGetDetails {
 	private Date dateCreated;
 	
 	@JsonProperty("cost")
-	private float cost;
+	private BigDecimal cost;
 
 	@JsonProperty("note")
 	private String note;

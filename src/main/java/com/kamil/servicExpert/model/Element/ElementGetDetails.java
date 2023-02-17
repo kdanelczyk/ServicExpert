@@ -1,5 +1,7 @@
 package com.kamil.servicExpert.model.Element;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -27,5 +29,5 @@ public class ElementGetDetails {
 	private String nameOfElement;
 	
 	@JsonProperty("price_of_element")
-	private float priceOfElement;
+	private BigDecimal priceOfElement;
 }

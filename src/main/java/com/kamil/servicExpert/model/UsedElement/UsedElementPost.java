@@ -1,4 +1,4 @@
-package com.kamil.servicExpert.model.Element;
+package com.kamil.servicExpert.model.UsedElement;
 
 import java.math.BigDecimal;
 
@@ -19,22 +19,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ElementPost {
-
-	@JsonProperty("quantity")
-	@NotNull(message = "quantity is required.")
-	private int quantity;
-
-	@JsonProperty("critical_quantity")
-	@NotNull(message = "criticalQuantity is required.")
-	private int criticalQuantity;
+public class UsedElementPost {
 	
 	@JsonProperty("name_of_element")
 	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
 	private String nameOfElement;
 	
 	@JsonProperty("price_of_element")
-	@NotNull(message = "price is required.")
+	@NotNull(message = "quantity is required.")
 	private BigDecimal priceOfElement;
 	
 }

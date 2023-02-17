@@ -1,5 +1,7 @@
 package com.kamil.servicExpert.model.Repair;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +23,7 @@ public class RepairPost {
 
 	@JsonProperty("cost")
 	@NotNull(message = "cost is required.")
-	private float cost;
+	private BigDecimal cost;
 
 	@JsonProperty("note")
 	@Size(min = 10, max = 300, message = "Note should have min 30 and max 300 characters.")

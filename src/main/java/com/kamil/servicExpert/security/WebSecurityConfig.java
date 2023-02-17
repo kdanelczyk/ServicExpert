@@ -27,6 +27,7 @@ import com.kamil.servicExpert.security.service.UserDetailsServiceImpl;
 		// jsr250Enabled = true,
 		prePostEnabled = true)
 public class WebSecurityConfig {
+	
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 

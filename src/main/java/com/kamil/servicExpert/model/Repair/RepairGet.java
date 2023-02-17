@@ -1,5 +1,6 @@
 package com.kamil.servicExpert.model.Repair;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,6 +24,6 @@ public class RepairGet {
 	private Date dateCreated;
 	
 	@JsonProperty("cost")
-	private float cost;
+	private BigDecimal cost;
 
 }

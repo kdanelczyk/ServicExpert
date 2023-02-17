@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -22,14 +21,15 @@ import jakarta.mail.util.ByteArrayDataSource;
 @Service
 public class EmailSenderImpl implements EmailSender{
 	
-    @Autowired
     private JavaMailSender javaMailSender;
-    
-    @Autowired
     private PdfRepairsGenerator repairsGenerator;
-    
-    @Autowired
     private PdfElementsGenerator elementsGenerator;
+    
+    public EmailSenderImpl(JavaMailSender javaMailSender, PdfRepairsGenerator repairsGenerator, PdfElementsGenerator elementsGenerator) {
+    	this.javaMailSender = javaMailSender;
+    	this.repairsGenerator = repairsGenerator;
+    	this.elementsGenerator = elementsGenerator;
+    }
 	
     @Override
     public void sendReportsEmail(List<Repair> repairList, List<Element> elementList) throws MessagingException, IOException {

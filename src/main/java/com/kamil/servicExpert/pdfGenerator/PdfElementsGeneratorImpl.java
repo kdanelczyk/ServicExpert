@@ -2,6 +2,7 @@ package com.kamil.servicExpert.pdfGenerator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -68,7 +69,7 @@ public class PdfElementsGeneratorImpl implements PdfElementsGenerator{
 			tableForElements.addCell(String.valueOf(element.getNameOfElement()));
 			tableForElements.addCell(String.valueOf(element.getType().getNameOfType()));
 			tableForElements.addCell(String.valueOf(element.getPriceOfElement()));
-			tableForElements.addCell(String.valueOf(element.getPriceOfElement() * element.getQuantity()));
+			tableForElements.addCell(String.valueOf(element.getPriceOfElement().multiply(BigDecimal.valueOf(element.getQuantity()))));
 			tableForElements.addCell(String.valueOf(element.getQuantity()));
 			tableForElements.addCell(String.valueOf(element.getCriticalQuantity()>element.getQuantity()));
 			});

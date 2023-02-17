@@ -12,12 +12,14 @@ import com.kamil.servicExpert.model.User.UserGetDetails;
 @Component
 public class UserMapperImpl implements UserMapper{
 	
-	@Autowired
 	RepairMapper repairMapper;
-	
-	@Autowired
 	NoteMapper noteMapper;
-
+	
+	public UserMapperImpl(RepairMapper repairMapper, NoteMapper noteMapper) {
+		this.repairMapper = repairMapper;
+		this.noteMapper = noteMapper;
+	}
+ 
 	@Override
 	public UserGet userToUserGet(User user) {
 		if(user == null) {

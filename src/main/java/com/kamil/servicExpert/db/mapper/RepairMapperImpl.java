@@ -3,7 +3,6 @@ package com.kamil.servicExpert.db.mapper;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.db.model.Repair;
@@ -14,11 +13,13 @@ import com.kamil.servicExpert.model.Repair.RepairPost;
 @Component
 public class RepairMapperImpl implements RepairMapper{
 	
-	@Autowired
 	DeviceMapper deviceMapper;
-	
-	@Autowired
 	UsedElementMapper usedElementMapper;
+	
+	public RepairMapperImpl(DeviceMapper deviceMapper, UsedElementMapper usedElementMapper) {
+		this.deviceMapper = deviceMapper;
+		this.usedElementMapper = usedElementMapper;
+	}
 
 	@Override
 	public Repair repairInputToRepair(RepairPost repairPost) {

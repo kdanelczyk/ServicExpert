@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +16,16 @@ import com.kamil.servicExpert.service.UserService;
 
 @Service
 public class AuthServiceImpl implements AuthService{
-
-	@Autowired
+	
 	UserService userService;
-
-	@Autowired
 	RoleRepository roleRepository;
-
-	@Autowired
 	PasswordEncoder encoder;
+	
+	public AuthServiceImpl(UserService userService, RoleRepository roleRepository, PasswordEncoder encoder) {
+		this.userService = userService;
+		this.roleRepository = roleRepository;
+		this.encoder = encoder;
+	}
 	
 	@Override
 	public void registerUser(UserSignupRequest signUpRequest) {

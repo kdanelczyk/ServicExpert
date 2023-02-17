@@ -1,5 +1,7 @@
 package com.kamil.servicExpert.db.model;
 
+import java.math.BigDecimal;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -43,7 +45,7 @@ public class Element {
 	private String nameOfElement;
 	
 	@Column(name = "price_of_element")
-	private float priceOfElement;
+	private BigDecimal priceOfElement;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "type_id", nullable = false)

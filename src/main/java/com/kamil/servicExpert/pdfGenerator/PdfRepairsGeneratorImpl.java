@@ -2,8 +2,8 @@ package com.kamil.servicExpert.pdfGenerator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -56,17 +56,16 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 		cellForTotals.setPhrase(new Phrase("profit", font));
 		tableForTotals.addCell(cellForTotals);
 		
-		double priceOfRepairs = repairList.stream()
+		BigDecimal priceOfRepairs = repairList.stream()
 				.map(repair -> repair.getCost())
-				.mapToDouble(Float::doubleValue)
-				.sum();
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+
 		
-		double costOfElements = repairList.stream()
-				.map(repair -> repair.getElements().stream()
-						.map(element -> element.getPriceOfElement())
-						.mapToDouble(Float::doubleValue)
-						.sum())
-				.collect(Collectors.summingDouble(Double::doubleValue));
+		BigDecimal costOfElements = repairList.stream()
+				.map(repair -> repair.getUsedElements().stream()
+						.map(usedElement -> usedElement.getPriceOfElement())
+						.reduce(BigDecimal.ZERO, BigDecimal::add))
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		
 		repairList.stream().forEach(repair -> {
 			PdfPTable tableForRepairs = new PdfPTable(5);
@@ -114,7 +113,7 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 			tableForRepairs.addCell(String.valueOf(repair.getCost()));
 			tableForRepairs.addCell(String.valueOf(repair.getUser().getName()));
 			
-			repair.getElements().stream().forEach(element -> {
+			repair.getUsedElements().stream().forEach(element -> {
 				tableForElements.addCell(String.valueOf(element.getNameOfElement()));
 				tableForElements.addCell(String.valueOf(element.getPriceOfElement()));
 			});
@@ -124,7 +123,7 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 
 		tableForTotals.addCell(String.valueOf(priceOfRepairs));
 		tableForTotals.addCell(String.valueOf(costOfElements));
-		tableForTotals.addCell(String.valueOf(priceOfRepairs - costOfElements));
+		tableForTotals.addCell(String.valueOf(priceOfRepairs.subtract(costOfElements)));
 		report.add(tableForTotals);
 		report.close();
 		byte[] bytes = byteArrayOutputStream.toByteArray();
