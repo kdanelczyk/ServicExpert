@@ -1,8 +1,6 @@
 package com.kamil.servicExpert.scheduler;
 
 import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,20 +11,15 @@ import com.kamil.servicExpert.service.RepairService;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Component
 public class Scheduler {
-	
-	@Autowired
+
 	private RepairService repairService;
-	
-	@Autowired
 	private ElementService elementService;
-	
-	@Autowired
 	private NoteService noteService;
-	
-	@Autowired
 	private EmailSender emailSender;
 
 	@Transactional

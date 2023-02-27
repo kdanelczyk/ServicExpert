@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Device;
@@ -17,22 +16,16 @@ import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.RepairRepository;
 import com.kamil.servicExpert.repository.UsedElementRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class RepairServiceImpl implements RepairService{
-	
-    @Autowired
-    private RepairRepository repairRepository;
 
-	@Autowired
+    private RepairRepository repairRepository;
 	private DeviceService deviceService;
-    
-	@Autowired
 	private UserService userService;
-	
-	@Autowired
 	private ElementService elementService;
-	
-	@Autowired
 	private UsedElementRepository usedElementRepository;
 	
 	@Override

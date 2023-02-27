@@ -9,15 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   UserRepository userRepository;
-  
-  public UserDetailsServiceImpl(UserRepository userRepository) {
-	  this.userRepository = userRepository;
-  }
 
   @Override
   @Transactional

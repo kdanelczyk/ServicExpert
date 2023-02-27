@@ -3,7 +3,6 @@ package com.kamil.servicExpert.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Element;
@@ -11,13 +10,13 @@ import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.ElementRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class ElementServiceImpl implements ElementService{
-	
-	@Autowired
+
 	private ElementRepository elementRepository;
-	
-	@Autowired
 	private TypeService typeService;
 	
 	@Override

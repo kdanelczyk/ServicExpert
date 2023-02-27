@@ -4,20 +4,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Device;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.DeviceRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class DeviceServiceImpl implements DeviceService{
 
-	@Autowired
 	private DeviceRepository deviceRepository;
-	
-	@Autowired
 	private TypeService typeService;
 	
 	@Override
@@ -60,7 +59,8 @@ public class DeviceServiceImpl implements DeviceService{
 				.customerPhoneNumber(device.getCustomerPhoneNumber())
 				.nameOfCustomer(device.getNameOfCustomer())
 				.type(typeService.findById(typeId).get())
-				.dateOfReceipt(new Date()).repaired(false).build());
+				.dateOfReceipt(new Date())
+				.repaired(false).build());
 	}
 
 	@Override

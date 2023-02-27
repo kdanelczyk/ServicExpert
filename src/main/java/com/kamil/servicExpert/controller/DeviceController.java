@@ -3,7 +3,6 @@ package com.kamil.servicExpert.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -28,15 +27,14 @@ import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 import com.kamil.servicExpert.service.DeviceService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class DeviceController {
 
-	@Autowired
 	private DeviceService deviceService;
-	
-	@Autowired
 	private DeviceMapper deviceMapper;
 
 	@GetMapping("/devices/repaired")

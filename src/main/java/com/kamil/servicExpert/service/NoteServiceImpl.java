@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Element;
@@ -13,16 +12,14 @@ import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.NoteRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class NoteServiceImpl implements NoteService{
-	
-	@Autowired
-	private NoteRepository noteRepository;
 
-	@Autowired
+	private NoteRepository noteRepository;
 	private UserService userService;
-	
-	@Autowired
 	private ElementService elementService;
 	
 	@Override

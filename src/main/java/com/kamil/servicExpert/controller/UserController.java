@@ -2,14 +2,12 @@ package com.kamil.servicExpert.controller;
 
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,15 +22,14 @@ import com.kamil.servicExpert.model.User.UserDtoGet;
 import com.kamil.servicExpert.model.User.UserDtoGetDetails;
 import com.kamil.servicExpert.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:8081")
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class UserController {
-	
-	@Autowired
+
 	UserService userService;
-	
-	@Autowired
 	UserMapper userMapper;
 
 	@GetMapping("/users")

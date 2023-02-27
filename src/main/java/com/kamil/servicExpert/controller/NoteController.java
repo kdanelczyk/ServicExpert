@@ -3,14 +3,12 @@ package com.kamil.servicExpert.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.kamil.servicExpert.db.mapper.NoteMapper;
 import com.kamil.servicExpert.db.model.Note;
 import com.kamil.servicExpert.model.Note.NoteDtoGet;
@@ -27,17 +24,14 @@ import com.kamil.servicExpert.model.Note.NoteDtoPost;
 import com.kamil.servicExpert.service.NoteService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class NoteController {
 	
-
-	@Autowired
 	private NoteService noteService;
-	
-	@Autowired
 	private NoteMapper noteMapper;
 	
 	@GetMapping("/notes")

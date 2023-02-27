@@ -3,17 +3,18 @@ package com.kamil.servicExpert.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService{
-	
-	@Autowired
+
 	private UserRepository userRepository;
 	
 	@Override

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.kamil.servicExpert.db.model.ERole;
 import com.kamil.servicExpert.db.model.Role;
 import com.kamil.servicExpert.db.model.User;
@@ -14,18 +13,15 @@ import com.kamil.servicExpert.payload.request.UserSignupRequest;
 import com.kamil.servicExpert.repository.RoleRepository;
 import com.kamil.servicExpert.service.UserService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService{
 	
 	UserService userService;
 	RoleRepository roleRepository;
 	PasswordEncoder encoder;
-	
-	public AuthServiceImpl(UserService userService, RoleRepository roleRepository, PasswordEncoder encoder) {
-		this.userService = userService;
-		this.roleRepository = roleRepository;
-		this.encoder = encoder;
-	}
 	
 	@Override
 	public void registerUser(UserSignupRequest signUpRequest) {

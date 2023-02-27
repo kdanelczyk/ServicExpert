@@ -3,13 +3,11 @@ package com.kamil.servicExpert.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +26,14 @@ import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 import com.kamil.servicExpert.service.RepairService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class RepairController {
 
-	@Autowired
 	private RepairService repairService;
-	
-	@Autowired
 	private RepairMapper repairMapper;
 	
 	@GetMapping("/repairs")

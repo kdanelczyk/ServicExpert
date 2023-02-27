@@ -12,13 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kamil.servicExpert.db.model.User;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
+	
   private static final long serialVersionUID = 1L;
-
   private Long id;
-
   private String username;
-
   private String email;
 
   @JsonIgnore
@@ -26,14 +27,6 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(Long id, String username, String email, String password,
-      Collection<? extends GrantedAuthority> authorities) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.authorities = authorities;
-  }
 
   public static UserDetailsImpl build(User user) {
     List<GrantedAuthority> authorities = user.getRoles().stream()
