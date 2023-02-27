@@ -27,8 +27,7 @@ public class TypeServiceImpl implements TypeService{
 
 	@Override
 	public Optional<Type> findById(Long id) {
-		Optional<Type> type = typeRepository.findById(id);
-		return type;
+		return typeRepository.findById(id);
 	}
 
 	@Override
@@ -50,10 +49,10 @@ public class TypeServiceImpl implements TypeService{
 
 	@Override
 	public Type updateType(Long id, Type type) {
-		Type _type = findById(id).get();
-		_type.setNameOfType(type.getNameOfType());
-		save(_type);
-		return _type;
+		Type typeToUpdate = findById(id).get();
+		typeToUpdate.setNameOfType(type.getNameOfType());
+		save(typeToUpdate);
+		return typeToUpdate;
 	}
 	
 	@Override

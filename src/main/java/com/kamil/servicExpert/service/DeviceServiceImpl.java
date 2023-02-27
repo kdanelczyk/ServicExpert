@@ -65,11 +65,11 @@ public class DeviceServiceImpl implements DeviceService{
 
 	@Override
 	public Device updateDevice(Long id, Device device) {
-		Device _device = findById(id).get();
-		_device.setNameOfCustomer(device.getNameOfCustomer());
-		_device.setCustomerPhoneNumber(device.getCustomerPhoneNumber());
-		save(_device);
-		return _device;
+		Device deviceToUpdate = findById(id).get();
+		deviceToUpdate.setNameOfCustomer(device.getNameOfCustomer());
+		deviceToUpdate.setCustomerPhoneNumber(device.getCustomerPhoneNumber());
+		save(deviceToUpdate);
+		return deviceToUpdate;
 	}
 
 	@Override

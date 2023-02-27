@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.ElementRepository;
 
@@ -29,8 +28,7 @@ public class ElementServiceImpl implements ElementService{
 
 	@Override
 	public Optional<Element> findById(Long id) {
-		Optional<Element> element = elementRepository.findById(id);
-		return element;
+		return elementRepository.findById(id);
 	}
 
 	@Override
@@ -51,23 +49,22 @@ public class ElementServiceImpl implements ElementService{
 
 	@Override
 	public Element createElementForType(Long typeId, Element element) {
-		Type type = typeService.findById(typeId).get();
 		return save(Element.builder()
 				.quantity(element.getQuantity())
 				.criticalQuantity(element.getCriticalQuantity())
 				.nameOfElement(element.getNameOfElement())
 				.priceOfElement(element.getPriceOfElement())
-				.type(type).build());
+				.type(typeService.findById(typeId).get()).build());
 	}
 
 	@Override
 	public Element updateElement(Long id, Element element) {
-		Element _element = findById(id).get();
-		_element.setQuantity(element.getQuantity());
-		_element.setNameOfElement(element.getNameOfElement());
-		_element.setPriceOfElement(element.getPriceOfElement());
-		save(_element);
-		return _element;
+		Element elementToUpdate = findById(id).get();
+		elementToUpdate.setQuantity(element.getQuantity());
+		elementToUpdate.setNameOfElement(element.getNameOfElement());
+		elementToUpdate.setPriceOfElement(element.getPriceOfElement());
+		save(elementToUpdate);
+		return elementToUpdate;
 	}
 
 	@Override

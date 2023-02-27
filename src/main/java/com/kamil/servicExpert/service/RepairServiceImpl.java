@@ -10,7 +10,6 @@ import com.kamil.servicExpert.db.model.Device;
 import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.db.model.Repair;
 import com.kamil.servicExpert.db.model.UsedElement;
-import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.exception.BadRequestException;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.RepairRepository;
@@ -38,8 +37,7 @@ public class RepairServiceImpl implements RepairService{
 
 	@Override
 	public Optional<Repair> findById(Long id) {
-		Optional<Repair> repair = repairRepository.findById(id);
-		return repair;
+		return repairRepository.findById(id);
 	}
 
 	@Override
@@ -78,23 +76,22 @@ public class RepairServiceImpl implements RepairService{
 	@Override
 	public Repair createRepair(Long deviceId, Long userId, Repair repair) {
 		Device device = deviceService.findById(deviceId).get();
-		User user = userService.findById(userId).get();
 		device.setRepaired(true);
 		return save(Repair.builder()
 				.cost(repair.getCost())
 				.note(repair.getNote())
 				.dateCreated(new Date())
 				.device(device)
-				.user(user)
+				.user(userService.findById(userId).get())
 				.build());
 	}
 
 	@Override
 	public Repair updateRepair(Long id, Repair repair) {
-		Repair _repair = findById(id).get();
-		_repair.setCost(repair.getCost());
-		save(_repair);
-		return _repair;
+		Repair repairToUpdate = findById(id).get();
+		repairToUpdate.setCost(repair.getCost());
+		save(repairToUpdate);
+		return repairToUpdate;
 	}
 	
 	@Override
@@ -105,8 +102,8 @@ public class RepairServiceImpl implements RepairService{
 		if(element.getQuantity() <= 0) {
 			throw new BadRequestException("Quantity is 0!");
 		}
-		element.setQuantity(element.getQuantity() - 1);
 		
+		element.setQuantity(element.getQuantity() - 1);
 		repair.setCost(repair.getCost().add(element.getPriceOfElement()));
 		
 		UsedElement usedElement = usedElementRepository.save(UsedElement
@@ -115,6 +112,7 @@ public class RepairServiceImpl implements RepairService{
 				.priceOfElement(element.getPriceOfElement())
 				.repair(repair)
 				.build());
+		
 		List<UsedElement> usedElements = repair.getUsedElements();
 		usedElements.add(usedElement);
 		repair.setUsedElements(usedElements);
@@ -129,7 +127,6 @@ public class RepairServiceImpl implements RepairService{
 		if (usedElement != null) {
 			repair.getUsedElements().remove(usedElement);
 			usedElementRepository.deleteById(elementId);
-
 		}
 		save(repair);
 	}
@@ -149,4 +146,5 @@ public class RepairServiceImpl implements RepairService{
 	public void deleteByUserId(long userId) {
 		repairRepository.deleteByUserId(userId);
 	}
+	
 }

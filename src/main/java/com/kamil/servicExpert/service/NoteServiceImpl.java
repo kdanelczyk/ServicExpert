@@ -6,9 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.db.model.Note;
-import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.NoteRepository;
 
@@ -32,8 +30,7 @@ public class NoteServiceImpl implements NoteService{
 
 	@Override
 	public Optional<Note> findById(Long id) {
-		Optional<Note> note = noteRepository.findById(id);
-		return note;
+		return noteRepository.findById(id);
 	}
 
 	@Override
@@ -54,11 +51,10 @@ public class NoteServiceImpl implements NoteService{
 
 	@Override
 	public Note createNoteForUser(Long userId, Note note) {
-		User user = userService.findById(userId).get();
 		return save(Note.builder()
 				.dateCreated(new Date())
 				.description(note.getDescription())
-				.user(user)
+				.user(userService.findById(userId).get())
 				.build());
 	}
 
@@ -72,16 +68,15 @@ public class NoteServiceImpl implements NoteService{
 
 	@Override
 	public Note updateNote(Long id, Note note) {
-		Note _note = findById(id).get();
-		_note.setDescription(note.getDescription());
-		save(_note);
-		return _note;
+		Note noteToUpdate = findById(id).get();
+		noteToUpdate.setDescription(note.getDescription());
+		save(noteToUpdate);
+		return noteToUpdate;
 	}
 	
 	@Override
 	public void elementChecker() {
-		List<Element> elements = elementService.findAll();
-		elements.stream()
+		elementService.findAll().stream()
 			.filter(element -> element.getCriticalQuantity() >= element.getQuantity())
 			.forEach(element -> save(Note.builder()
 					.dateCreated(new Date())
