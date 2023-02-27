@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.db.model.Type;
-import com.kamil.servicExpert.model.Type.TypeGet;
-import com.kamil.servicExpert.model.Type.TypeGetDetails;
-import com.kamil.servicExpert.model.Type.TypePost;
+import com.kamil.servicExpert.model.Type.TypeDtoGet;
+import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
+import com.kamil.servicExpert.model.Type.TypeDtoPost;
 
 @Component
 public class TypeMapperImpl implements TypeMapper{
@@ -19,31 +19,31 @@ public class TypeMapperImpl implements TypeMapper{
 	}
 
 	@Override
-	public Type typeInputToType(TypePost typePost) {
-		if(typePost == null) {
+	public Type typeInputToType(TypeDtoPost typeDtoPost) {
+		if(typeDtoPost == null) {
 			return null;
 		}		
 		return 	Type.builder()
-				.nameOfType(typePost.getNameOfType())
+				.nameOfType(typeDtoPost.getNameOfType())
 				.build();
 	}
 
 	@Override
-	public TypeGet typeToTypeGet(Type type) {
+	public TypeDtoGet typeToTypeGet(Type type) {
 		if(type == null) {
 			return null;
 		}		
-		return 	TypeGet.builder()
+		return 	TypeDtoGet.builder()
 				.nameOfType(type.getNameOfType())
 				.build();
 	}
 
 	@Override
-	public TypeGetDetails typesToTypeGetDetails(Type type) {
+	public TypeDtoGetDetails typesToTypeGetDetails(Type type) {
 		if(type == null) {
 			return null;
 		}		
-		return 	TypeGetDetails.builder()
+		return 	TypeDtoGetDetails.builder()
 				.nameOfType(type.getNameOfType())
 				.elements(type.getElements()
 						.stream()

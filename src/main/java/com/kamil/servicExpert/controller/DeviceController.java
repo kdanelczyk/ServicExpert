@@ -10,7 +10,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,14 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.DeviceMapper;
 import com.kamil.servicExpert.db.model.Device;
-import com.kamil.servicExpert.model.Device.DeviceGet;
-import com.kamil.servicExpert.model.Device.DeviceGetDetails;
-import com.kamil.servicExpert.model.Device.DevicePost;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 import com.kamil.servicExpert.service.DeviceService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class DeviceController {
@@ -42,7 +41,7 @@ public class DeviceController {
 
 	@GetMapping("/devices/repaired")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<DeviceGet>> findByRepaired() {
+	public ResponseEntity<CollectionModel<DeviceDtoGet>> findByRepaired() {
 		if (deviceService.findByRepaired(true).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -66,7 +65,7 @@ public class DeviceController {
 
 	@GetMapping("/devices/not-repaired")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<DeviceGet>> findByNotRepaired() {
+	public ResponseEntity<CollectionModel<DeviceDtoGet>> findByNotRepaired() {
 		if (deviceService.findByRepaired(false).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -90,7 +89,7 @@ public class DeviceController {
 
 	@GetMapping("/devices")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<DeviceGet>> getAllDevices() {
+	public ResponseEntity<CollectionModel<DeviceDtoGet>> getAllDevices() {
 		if (deviceService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -118,7 +117,7 @@ public class DeviceController {
 
 	@GetMapping("/devices/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<DeviceGetDetails>> getDeviceById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<DeviceDtoGetDetails>> getDeviceById(@PathVariable("id") long id) {
 		if (deviceService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -151,7 +150,7 @@ public class DeviceController {
 
 	@GetMapping("/types/{typeId}/devices")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<DeviceGet>> getAllDevicesByTypeId(@PathVariable(value = "typeId") Long typeId) {
+	public ResponseEntity<CollectionModel<DeviceDtoGet>> getAllDevicesByTypeId(@PathVariable(value = "typeId") Long typeId) {
 		if (deviceService.findByTypeId(typeId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -176,7 +175,7 @@ public class DeviceController {
 	@PostMapping("/types/{typeId}/devices")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Device> createDeviceForType(@PathVariable(value = "typeId") Long typeId,
-			@Valid @RequestBody DevicePost deviceRequest) {
+			@Valid @RequestBody DeviceDtoPost deviceRequest) {
 		return new ResponseEntity<>(deviceService.createDeviceForType(typeId, deviceMapper.deviceInputToDevice(deviceRequest)), HttpStatus.CREATED);
 	}
 

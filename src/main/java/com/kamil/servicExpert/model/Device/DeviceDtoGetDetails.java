@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DeviceGetDetails {
+public class DeviceDtoGetDetails {
 
 	@JsonProperty("customer_phone_number")
 	private long customerPhoneNumber;

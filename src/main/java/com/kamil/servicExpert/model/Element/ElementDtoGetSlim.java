@@ -1,4 +1,4 @@
-package com.kamil.servicExpert.model.Type;
+package com.kamil.servicExpert.model.Element;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,8 +15,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class TypeGet {
-
-	@JsonProperty("type_name")
-	private String nameOfType;
+public class ElementDtoGetSlim {
+	
+	@JsonProperty("name_of_element")
+	private String nameOfElement;
 }

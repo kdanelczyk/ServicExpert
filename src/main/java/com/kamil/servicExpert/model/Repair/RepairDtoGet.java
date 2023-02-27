@@ -1,5 +1,6 @@
-package com.kamil.servicExpert.model.Note;
+package com.kamil.servicExpert.model.Repair;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,11 +18,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class NoteGet {
-
-	@JsonProperty("description")
-	private String description;
+public class RepairDtoGet {
 	
 	@JsonProperty("date_created")
 	private Date dateCreated;
+	
+	@JsonProperty("cost")
+	private BigDecimal cost;
+
 }

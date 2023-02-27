@@ -1,13 +1,11 @@
 package com.kamil.servicExpert.model.Repair;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kamil.servicExpert.model.Device.DeviceGet;
-import com.kamil.servicExpert.model.UsedElement.UsedElementSlim;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,20 +19,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RepairGetDetails {
-	
-	@JsonProperty("dateCreated")
-	private Date dateCreated;
-	
+public class RepairDtoPost {
+
 	@JsonProperty("cost")
+	@NotNull(message = "cost is required.")
 	private BigDecimal cost;
 
 	@JsonProperty("note")
+	@Size(min = 10, max = 300, message = "Note should have min 30 and max 300 characters.")
 	private String note;
 
-	@JsonProperty("device")
-	private DeviceGet device;
-	
-	@JsonProperty("usedElements")
-	private List<UsedElementSlim> usedElements;
 }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kamil.servicExpert.db.model.Device;
-import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
 import com.kamil.servicExpert.repository.DeviceRepository;
 
@@ -31,8 +30,7 @@ public class DeviceServiceImpl implements DeviceService{
 
 	@Override
 	public Optional<Device> findById(Long id) {
-		Optional<Device> device = deviceRepository.findById(id);
-		return device;
+		return deviceRepository.findById(id);
 	}
 
 	@Override
@@ -58,12 +56,10 @@ public class DeviceServiceImpl implements DeviceService{
 
 	@Override
 	public Device createDeviceForType(Long typeId, Device device) {
-		Type type = typeService.findById(typeId).get();
-		
 		return save(Device.builder()
 				.customerPhoneNumber(device.getCustomerPhoneNumber())
 				.nameOfCustomer(device.getNameOfCustomer())
-				.type(type)
+				.type(typeService.findById(typeId).get())
 				.dateOfReceipt(new Date()).repaired(false).build());
 	}
 

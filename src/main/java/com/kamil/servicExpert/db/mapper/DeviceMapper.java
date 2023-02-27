@@ -3,16 +3,16 @@ package com.kamil.servicExpert.db.mapper;
 import org.mapstruct.Mapper;
 
 import com.kamil.servicExpert.db.model.Device;
-import com.kamil.servicExpert.model.Device.DeviceGet;
-import com.kamil.servicExpert.model.Device.DeviceGetDetails;
-import com.kamil.servicExpert.model.Device.DevicePost;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 
 @Mapper(componentModel = "spring")
 public interface DeviceMapper {
 	
-	Device deviceInputToDevice(DevicePost devicePost);
+	Device deviceInputToDevice(DeviceDtoPost deviceDtoPost);
 	
-	DeviceGet deviceToDeviceGet(Device device);
+	DeviceDtoGet deviceToDeviceGet(Device device);
 	
-	DeviceGetDetails deviceToDeviceGetDetails(Device device);
+	DeviceDtoGetDetails deviceToDeviceGetDetails(Device device);
 }

@@ -1,7 +1,8 @@
-package com.kamil.servicExpert.model.Element;
+package com.kamil.servicExpert.model.Note;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +16,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ElementGet {
-
-	@JsonProperty("quantity")
-	private int quantity;
+public class NoteDtoPost {
 	
-	@JsonProperty("name_of_element")
-	private String nameOfElement;
-
+	@JsonProperty("description")
+	@NotNull(message = "Note is required.")
+	private String description;
 }

@@ -21,11 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.ElementMapper;
-import com.kamil.servicExpert.db.mapper.RepairMapper;
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.model.Element.ElementGet;
-import com.kamil.servicExpert.model.Element.ElementGetDetails;
-import com.kamil.servicExpert.model.Element.ElementPost;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
 import com.kamil.servicExpert.service.ElementService;
 
 import jakarta.validation.Valid;
@@ -43,7 +42,7 @@ public class ElementController {
 
 	@GetMapping("/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<ElementGet>> getAllElements() {
+	public ResponseEntity<CollectionModel<ElementDtoGet>> getAllElements() {
 		if (elementService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -63,7 +62,7 @@ public class ElementController {
 
 	@GetMapping("/elements/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<ElementGetDetails>> getElementById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<ElementDtoGetDetails>> getElementById(@PathVariable("id") long id) {
 		if (elementService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -88,7 +87,7 @@ public class ElementController {
 
 	@GetMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<ElementGet>> getAllElementsByTypeId(
+	public ResponseEntity<CollectionModel<ElementDtoGet>> getAllElementsByTypeId(
 			@PathVariable(value = "typeId") Long typeId) {
 		if (elementService.findByTypeId(typeId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -114,7 +113,7 @@ public class ElementController {
 	@PostMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Element> createElementForType(@PathVariable(value = "typeId") Long typeId,
-			@Valid @RequestBody ElementPost elementRequest) {
+			@Valid @RequestBody ElementDtoPost elementRequest) {
 		return new ResponseEntity<>(elementService.createElementForType(typeId, elementMapper.elementInputToElement(elementRequest)), HttpStatus.CREATED);
 	}
 

@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.UserMapper;
 import com.kamil.servicExpert.db.model.User;
-import com.kamil.servicExpert.model.User.UserGet;
-import com.kamil.servicExpert.model.User.UserGetDetails;
+import com.kamil.servicExpert.model.User.UserDtoGet;
+import com.kamil.servicExpert.model.User.UserDtoGetDetails;
 import com.kamil.servicExpert.service.UserService;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -37,7 +37,7 @@ public class UserController {
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<UserGet>> getAllUsers() {
+	public ResponseEntity<CollectionModel<UserDtoGet>> getAllUsers() {
 		if (userService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -57,7 +57,7 @@ public class UserController {
 
 	@GetMapping("/users/{id}")
 	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<UserGetDetails>> getUserById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<UserDtoGetDetails>> getUserById(@PathVariable("id") long id) {
 		if (userService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

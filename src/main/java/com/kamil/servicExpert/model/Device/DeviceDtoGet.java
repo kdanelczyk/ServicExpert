@@ -1,9 +1,6 @@
-package com.kamil.servicExpert.model.Type;
-
-import java.util.List;
+package com.kamil.servicExpert.model.Device;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kamil.servicExpert.model.Element.ElementSlim;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +15,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class TypeGetDetails {
+public class DeviceDtoGet {
+
+	@JsonProperty("name_of_customer")
+	private String nameOfCustomer;
 	
-	@JsonProperty("type_name")
-	private String nameOfType;
-	
-	@JsonProperty("elements")
-	private List<ElementSlim> elements;
+	@JsonProperty("repaired")
+	private boolean repaired;
 }

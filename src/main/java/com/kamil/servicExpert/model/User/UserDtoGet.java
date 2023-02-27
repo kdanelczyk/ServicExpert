@@ -3,8 +3,8 @@ package com.kamil.servicExpert.model.User;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kamil.servicExpert.model.Note.NoteGet;
-import com.kamil.servicExpert.model.Repair.RepairGet;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserGet {
+public class UserDtoGet {
 
 	@JsonProperty("name")
 	private String name;
@@ -28,9 +28,9 @@ public class UserGet {
 	private String email;
 	
 	@JsonProperty("repairs")
-	private List<RepairGet> repairs;
+	private List<RepairDtoGet> repairs;
 	
 	@JsonProperty("notes")
-	private List<NoteGet> notes;
+	private List<NoteDtoGet> notes;
 
 }

@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ class RepairControllerTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// when
@@ -88,7 +89,7 @@ class RepairControllerTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// when
@@ -120,7 +121,7 @@ class RepairControllerTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// when

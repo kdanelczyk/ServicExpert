@@ -1,8 +1,7 @@
-package com.kamil.servicExpert.model.Type;
+package com.kamil.servicExpert.model.UsedElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +15,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class TypePost {
-
-	@JsonProperty("type_name")
-	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
-	private String nameOfType;
+public class UsedElementDtoSlim {
+	
+	@JsonProperty("name_of_element")
+	private String nameOfElement;
 }

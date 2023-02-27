@@ -3,19 +3,19 @@ package com.kamil.servicExpert.db.mapper;
 import org.mapstruct.Mapper;
 
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.model.Element.ElementGet;
-import com.kamil.servicExpert.model.Element.ElementGetDetails;
-import com.kamil.servicExpert.model.Element.ElementPost;
-import com.kamil.servicExpert.model.Element.ElementSlim;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
+import com.kamil.servicExpert.model.Element.ElementDtoGetSlim;
 
 @Mapper(componentModel = "spring")
 public interface ElementMapper {
 	
-	Element elementInputToElement(ElementPost elementPost);
+	Element elementInputToElement(ElementDtoPost elementDtoPost);
 	
-	ElementSlim elementToElementSlim(Element element);
+	ElementDtoGetSlim elementToElementSlim(Element element);
 	
-	ElementGet elementToElementGet(Element element);
+	ElementDtoGet elementToElementGet(Element element);
 	
-	ElementGetDetails elementToElementGetDetails(Element element);
+	ElementDtoGetDetails elementToElementGetDetails(Element element);
 }

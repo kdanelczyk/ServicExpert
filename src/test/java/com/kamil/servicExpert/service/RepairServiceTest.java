@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +56,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(repairService.findById(id)).thenReturn(Optional.of(repair));
@@ -83,7 +84,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// When
@@ -101,7 +102,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// When
@@ -113,31 +114,13 @@ class RepairServiceTest {
 	}
 
 	@Test
-	void testFindRepairsByElementsId() {
-		// Given
-		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(20)
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// When
-		when(repairService.findRepairsByElementsId(id)).thenReturn(repairs);
-		// Then
-        assertEquals(repairService.findRepairsByElementsId(id), repairs);
-        assertEquals(repairService.findRepairsByElementsId(id).isEmpty(), false);
-        verify(repairService, times(2)).findRepairsByElementsId(id);
-	}
-
-	@Test
 	void testFindByDateCreated() {
 		// Given
 		Date date = new Date();
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// When
@@ -165,7 +148,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		List<Repair> repairs = List.of(repair);
 		// When
@@ -182,7 +165,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(repairService.save(repair)).thenReturn(repair);
@@ -198,7 +181,7 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(repairService.createRepair(id, id, repair)).thenReturn(repair);
@@ -214,12 +197,12 @@ class RepairServiceTest {
 		Repair repair = Repair
 				.builder()
 				.note("note of repair")
-				.cost(20)
+				.cost(BigDecimal.valueOf(20))
 				.build();
 		Repair updatedRepair = Repair
 				.builder()
 				.note("note of repairUpdated")
-				.cost(30)
+				.cost(BigDecimal.valueOf(30))
 				.build();
 		// When
 		when(repairService.updateRepair(id, repair)).thenReturn(updatedRepair);

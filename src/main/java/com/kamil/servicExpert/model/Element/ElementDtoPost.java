@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ElementPost {
+public class ElementDtoPost {
 
 	@JsonProperty("quantity")
 	@NotNull(message = "quantity is required.")

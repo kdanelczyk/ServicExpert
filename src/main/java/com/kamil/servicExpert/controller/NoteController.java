@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.NoteMapper;
 import com.kamil.servicExpert.db.model.Note;
-import com.kamil.servicExpert.model.Note.NoteGet;
-import com.kamil.servicExpert.model.Note.NotePost;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
 import com.kamil.servicExpert.service.NoteService;
 
 import jakarta.validation.Valid;
@@ -42,7 +42,7 @@ public class NoteController {
 	
 	@GetMapping("/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<NoteGet>> getAllNotes() {
+	public ResponseEntity<CollectionModel<NoteDtoGet>> getAllNotes() {
 		if (noteService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -62,7 +62,7 @@ public class NoteController {
 	
 	@GetMapping("/notes/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<NoteGet>> getNoteById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<NoteDtoGet>> getNoteById(@PathVariable("id") long id) {
 		if (noteService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -87,7 +87,7 @@ public class NoteController {
 
 	@GetMapping("/users/{userId}/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<NoteGet>> getAllNotesByUserId(@PathVariable(value = "userId") Long userId) {
+	public ResponseEntity<CollectionModel<NoteDtoGet>> getAllNotesByUserId(@PathVariable(value = "userId") Long userId) {
 		if (noteService.findByUserId(userId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -112,13 +112,13 @@ public class NoteController {
 	@PostMapping("/users/{userId}/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Note> createNoteForUser(@PathVariable(value = "userId") Long userId,
-			@Valid @RequestBody NotePost noteRequest) {
+			@Valid @RequestBody NoteDtoPost noteRequest) {
 		return new ResponseEntity<>(noteService.createNoteForUser(userId, noteMapper.noteInputToNote(noteRequest)),HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> createNote(@Valid @RequestBody NotePost noteRequest) {
+	public ResponseEntity<Note> createNote(@Valid @RequestBody NoteDtoPost noteRequest) {
 		return new ResponseEntity<>(noteService.createNote(noteMapper.noteInputToNote(noteRequest)), HttpStatus.CREATED);
 	}
 

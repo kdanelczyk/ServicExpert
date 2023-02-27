@@ -4,43 +4,43 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.db.model.Device;
-import com.kamil.servicExpert.model.Device.DeviceGet;
-import com.kamil.servicExpert.model.Device.DeviceGetDetails;
-import com.kamil.servicExpert.model.Device.DevicePost;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 
 @Component
 public class DeviceMapperImpl implements DeviceMapper{
 	
 	@Override
-	public Device deviceInputToDevice(DevicePost devicePost) {
-		if(devicePost == null) {
+	public Device deviceInputToDevice(DeviceDtoPost deviceDtoPost) {
+		if(deviceDtoPost == null) {
 			return null;
 		}		
 		return 	Device.builder()
-				.customerPhoneNumber(devicePost.getCustomerPhoneNumber())
-				.nameOfCustomer(devicePost.getNameOfCustomer())
+				.customerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber())
+				.nameOfCustomer(deviceDtoPost.getNameOfCustomer())
 				.dateOfReceipt(new Date())
 				.repaired(false)
 				.build();
 	}
 
 	@Override
-	public DeviceGet deviceToDeviceGet(Device device) {
+	public DeviceDtoGet deviceToDeviceGet(Device device) {
 		if(device == null) {
 			return null;
 		}		
-		return 	DeviceGet.builder()
+		return 	DeviceDtoGet.builder()
 				.nameOfCustomer(device.getNameOfCustomer())
 				.repaired(device.isRepaired())
 				.build();
 	}
 
 	@Override
-	public DeviceGetDetails deviceToDeviceGetDetails(Device device) {
+	public DeviceDtoGetDetails deviceToDeviceGetDetails(Device device) {
 		if(device == null) {
 			return null;
 		}		
-		return 	DeviceGetDetails.builder()
+		return 	DeviceDtoGetDetails.builder()
 				.customerPhoneNumber(device.getCustomerPhoneNumber())
 				.nameOfCustomer(device.getNameOfCustomer())
 				.dateOfReceipt(device.getDateOfReceipt())

@@ -3,13 +3,13 @@ package com.kamil.servicExpert.db.mapper;
 import org.mapstruct.Mapper;
 
 import com.kamil.servicExpert.db.model.Note;
-import com.kamil.servicExpert.model.Note.NoteGet;
-import com.kamil.servicExpert.model.Note.NotePost;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
 
 @Mapper(componentModel = "spring")
 public interface NoteMapper {
 	
-	Note noteInputToNote(NotePost notePost);
+	Note noteInputToNote(NoteDtoPost noteDtoPost);
 	
-	NoteGet noteToNoteGet(Note note);
+	NoteDtoGet noteToNoteGet(Note note);
 }

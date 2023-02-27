@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.RepairMapper;
 import com.kamil.servicExpert.db.model.Repair;
-import com.kamil.servicExpert.model.Repair.RepairGet;
-import com.kamil.servicExpert.model.Repair.RepairGetDetails;
-import com.kamil.servicExpert.model.Repair.RepairPost;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 import com.kamil.servicExpert.service.RepairService;
 
 import jakarta.validation.Valid;
@@ -42,7 +42,7 @@ public class RepairController {
 	
 	@GetMapping("/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<RepairGet>> getAllRepairs() {
+	public ResponseEntity<CollectionModel<RepairDtoGet>> getAllRepairs() {
 		if (repairService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -62,7 +62,7 @@ public class RepairController {
 	
 	@GetMapping("/repairs/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<RepairGetDetails>> getRepairById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<RepairDtoGetDetails>> getRepairById(@PathVariable("id") long id) {
 		if (repairService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -87,7 +87,7 @@ public class RepairController {
 
 	@GetMapping("/devices/{deviceId}/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<RepairGet>> getAllRepairsByDeviceId(
+	public ResponseEntity<CollectionModel<RepairDtoGet>> getAllRepairsByDeviceId(
 			@PathVariable(value = "deviceId") Long deviceId) {
 		if (repairService.findByDeviceId(deviceId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -112,7 +112,7 @@ public class RepairController {
 
 	@GetMapping("/users/{userId}/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<RepairGet>> getAllRepairsByUserId(@PathVariable(value = "userId") Long userId) {
+	public ResponseEntity<CollectionModel<RepairDtoGet>> getAllRepairsByUserId(@PathVariable(value = "userId") Long userId) {
 		if (repairService.findByUserId(userId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -137,7 +137,7 @@ public class RepairController {
 	@PostMapping("/devices/{deviceId}/users/{userId}/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<Repair> createRepair(@PathVariable(value = "deviceId") Long deviceId,
-			@PathVariable(value = "userId") Long userId, @Valid @RequestBody RepairPost repairRequest) {
+			@PathVariable(value = "userId") Long userId, @Valid @RequestBody RepairDtoPost repairRequest) {
 		return new ResponseEntity<>(repairService.createRepair(deviceId, userId, repairMapper.repairInputToRepair(repairRequest)), HttpStatus.CREATED);
 	}
 

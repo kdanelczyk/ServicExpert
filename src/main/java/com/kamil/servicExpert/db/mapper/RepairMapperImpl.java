@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.db.model.Repair;
-import com.kamil.servicExpert.model.Repair.RepairGet;
-import com.kamil.servicExpert.model.Repair.RepairGetDetails;
-import com.kamil.servicExpert.model.Repair.RepairPost;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 
 @Component
 public class RepairMapperImpl implements RepairMapper{
@@ -22,34 +22,34 @@ public class RepairMapperImpl implements RepairMapper{
 	}
 
 	@Override
-	public Repair repairInputToRepair(RepairPost repairPost) {
-		if(repairPost == null) {
+	public Repair repairInputToRepair(RepairDtoPost repairDtoPost) {
+		if(repairDtoPost == null) {
 			return null;
 		}		
 		return 	Repair.builder()
-				.cost(repairPost.getCost())
-				.note(repairPost.getNote())
+				.cost(repairDtoPost.getCost())
+				.note(repairDtoPost.getNote())
 				.dateCreated(new Date())
 				.build();
 	}
 
 	@Override
-	public RepairGet repairToRepairGet(Repair repair) {
+	public RepairDtoGet repairToRepairGet(Repair repair) {
 		if(repair == null) {
 			return null;
 		}		
-		return 	RepairGet.builder()
+		return 	RepairDtoGet.builder()
 				.cost(repair.getCost())
 				.dateCreated(repair.getDateCreated())
 				.build();
 	}
 
 	@Override
-	public RepairGetDetails repairToRepairGetDetails(Repair repair) {
+	public RepairDtoGetDetails repairToRepairGetDetails(Repair repair) {
 		if(repair == null) {
 			return null;
 		}		
-		return 	RepairGetDetails.builder()
+		return 	RepairDtoGetDetails.builder()
 				.dateCreated(repair.getDateCreated())
 				.cost(repair.getCost())
 				.note(repair.getNote())

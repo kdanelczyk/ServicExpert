@@ -14,8 +14,6 @@ public interface RepairRepository extends JpaRepository<Repair, Long> {
 	
 	List<Repair> findByUserId(Long userId);
 
-	List<Repair> findRepairsByElementsId(Long elementId);
-
 	List<Repair> findByDateCreated(Date dateCreated);
 
 	@Transactional

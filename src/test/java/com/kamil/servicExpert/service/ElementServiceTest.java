@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.db.model.Repair;
 
 @WebMvcTest(ElementService.class)
 @ExtendWith(MockitoExtension.class)
@@ -57,7 +57,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.findById(id)).thenReturn(Optional.of(element));
@@ -89,7 +89,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		List<Element> elements = List.of(element);
 		// When
@@ -97,100 +97,6 @@ class ElementServiceTest {
 		// Then
 		assertEquals(1, elementService.findByTypeId(id).size());
 		verify(elementService).findByTypeId(id);
-	}
-
-	@Test
-	void testFindByQuantity() {
-		// Given
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
-				.build();
-		List<Element> elements = List.of(element);
-		// When
-		when(elementService.findByQuantity(1)).thenReturn(elements);
-		// Then
-		assertEquals(1, elementService.findByQuantity(1).size());
-		verify(elementService).findByQuantity(1);
-	}
-
-	@Test
-	void testFindByPriceOfElement() {
-		// Given
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
-				.build();
-		List<Element> elements = List.of(element);
-		// When
-		when(elementService.findByPriceOfElement(20)).thenReturn(elements);
-		// Then
-		assertEquals(1, elementService.findByPriceOfElement(20).size());
-		verify(elementService).findByPriceOfElement(20);
-	}
-
-	@Test
-	void testFindByNameOfElement() {
-		// Given
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
-				.build();
-		List<Element> elements = List.of(element);
-		// When
-		when(elementService.findByNameOfElement("nameOfElement")).thenReturn(elements);
-		// Then
-		assertEquals(1, elementService.findByNameOfElement("nameOfElement").size());
-		verify(elementService).findByNameOfElement("nameOfElement");
-	}
-
-	@Test
-	void testFindElementsByRepairId() {
-		// Given
-		Long id = 1L;
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
-				.build();
-		List<Element> elements = List.of(element);
-		// When
-		when(elementService.findElementsByRepairId(id)).thenReturn(elements);
-		// Then
-		assertEquals(1, elementService.findElementsByRepairId(id).size());
-		verify(elementService).findElementsByRepairId(id);
-	}
-
-	@Test
-	void testFindRepairsByElementsId() {
-		// Given
-		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(20)
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// When
-		when(elementService.findRepairsByElementsId(id)).thenReturn(repairs);
-		// Then
-		assertEquals(1, elementService.findRepairsByElementsId(id).size());
-		verify(elementService).findRepairsByElementsId(id);
 	}
 
 	@Test
@@ -202,7 +108,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		List<Element> elements = List.of(element);
 		// When
@@ -232,7 +138,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.save(element)).thenReturn(element);
@@ -251,7 +157,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.createElementForType(id, element)).thenReturn(element);
@@ -270,7 +176,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		Element updatedElement = Element
 				.builder()
@@ -278,7 +184,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.updateElement(id, element)).thenReturn(updatedElement);
@@ -297,7 +203,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		Element updatedElement = Element
 				.builder()
@@ -305,7 +211,7 @@ class ElementServiceTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.updateElement(id, element)).thenReturn(updatedElement);
@@ -331,13 +237,6 @@ class ElementServiceTest {
 		Long id = 1L;
 		elementService.deleteByTypeId(id);
 		verify(elementService).deleteByTypeId(id);
-	}
-
-	@Test
-	void testDeleteElementFromRepair() {
-		Long id = 1L;
-		elementService.deleteElementFromRepair(id, id);
-		verify(elementService).deleteElementFromRepair(id, id);
 	}
 
 }

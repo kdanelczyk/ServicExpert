@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DevicePost {
+public class DeviceDtoPost {
 
 	@JsonProperty("customer_phone_number")
 	@NotNull(message = "customerPhoneNumber is required.")

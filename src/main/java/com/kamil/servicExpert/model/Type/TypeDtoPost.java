@@ -1,10 +1,7 @@
-package com.kamil.servicExpert.model.UsedElement;
-
-import java.math.BigDecimal;
+package com.kamil.servicExpert.model.Type;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,14 +16,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UsedElementPost {
-	
-	@JsonProperty("name_of_element")
+public class TypeDtoPost {
+
+	@JsonProperty("type_name")
 	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
-	private String nameOfElement;
-	
-	@JsonProperty("price_of_element")
-	@NotNull(message = "quantity is required.")
-	private BigDecimal priceOfElement;
-	
+	private String nameOfType;
 }

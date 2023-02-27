@@ -2,8 +2,11 @@ package com.kamil.servicExpert.model.Repair;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.UsedElement.UsedElementDtoSlim;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,12 +21,20 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RepairGet {
+public class RepairDtoGetDetails {
 	
-	@JsonProperty("date_created")
+	@JsonProperty("dateCreated")
 	private Date dateCreated;
 	
 	@JsonProperty("cost")
 	private BigDecimal cost;
 
+	@JsonProperty("note")
+	private String note;
+
+	@JsonProperty("device")
+	private DeviceDtoGet device;
+	
+	@JsonProperty("usedElements")
+	private List<UsedElementDtoSlim> usedElements;
 }

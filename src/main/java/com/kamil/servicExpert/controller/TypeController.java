@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kamil.servicExpert.db.mapper.TypeMapper;
 import com.kamil.servicExpert.db.model.Type;
-import com.kamil.servicExpert.model.Type.TypeGet;
-import com.kamil.servicExpert.model.Type.TypeGetDetails;
-import com.kamil.servicExpert.model.Type.TypePost;
+import com.kamil.servicExpert.model.Type.TypeDtoGet;
+import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
+import com.kamil.servicExpert.model.Type.TypeDtoPost;
 import com.kamil.servicExpert.service.TypeService;
 
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class TypeController {
 
 	@GetMapping("/types")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<CollectionModel<TypeGet>> getAllTypes() {
+	public ResponseEntity<CollectionModel<TypeDtoGet>> getAllTypes() {
 		if (typeService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -61,7 +61,7 @@ public class TypeController {
 
 	@GetMapping("/types/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<EntityModel<TypeGetDetails>> getTypeById(@PathVariable("id") long id) {
+	public ResponseEntity<EntityModel<TypeDtoGetDetails>> getTypeById(@PathVariable("id") long id) {
 		if (typeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -102,7 +102,7 @@ public class TypeController {
 
 	@PostMapping("/types")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Type> createType(@Valid @RequestBody TypePost typeRequest) {
+	public ResponseEntity<Type> createType(@Valid @RequestBody TypeDtoPost typeRequest) {
 		return new ResponseEntity<>(typeService.createType(typeMapper.typeInputToType(typeRequest)), HttpStatus.CREATED);
 	}
 

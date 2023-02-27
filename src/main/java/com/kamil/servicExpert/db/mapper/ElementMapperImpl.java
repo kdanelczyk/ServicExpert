@@ -3,54 +3,54 @@ package com.kamil.servicExpert.db.mapper;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.model.Element.ElementGet;
-import com.kamil.servicExpert.model.Element.ElementGetDetails;
-import com.kamil.servicExpert.model.Element.ElementPost;
-import com.kamil.servicExpert.model.Element.ElementSlim;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
+import com.kamil.servicExpert.model.Element.ElementDtoGetSlim;
 
 @Component
 public class ElementMapperImpl implements ElementMapper{
 
 	@Override
-	public Element elementInputToElement(ElementPost elementPost) {
-		if(elementPost == null) {
+	public Element elementInputToElement(ElementDtoPost elementDtoPost) {
+		if(elementDtoPost == null) {
 			return null;
 		}		
 		return 	Element.builder()
-				.quantity(elementPost.getQuantity())
-				.criticalQuantity(elementPost.getCriticalQuantity())
-				.nameOfElement(elementPost.getNameOfElement())
-				.priceOfElement(elementPost.getPriceOfElement())
+				.quantity(elementDtoPost.getQuantity())
+				.criticalQuantity(elementDtoPost.getCriticalQuantity())
+				.nameOfElement(elementDtoPost.getNameOfElement())
+				.priceOfElement(elementDtoPost.getPriceOfElement())
 				.build();
 	}
 	
 	@Override
-	public ElementSlim elementToElementSlim(Element element) {
+	public ElementDtoGetSlim elementToElementSlim(Element element) {
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementSlim.builder()
+		return 	ElementDtoGetSlim.builder()
 				.nameOfElement(element.getNameOfElement())
 				.build();
 	}
 
 	@Override
-	public ElementGet elementToElementGet(Element element) {
+	public ElementDtoGet elementToElementGet(Element element) {
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementGet.builder()
+		return 	ElementDtoGet.builder()
 				.quantity(element.getQuantity())
 				.nameOfElement(element.getNameOfElement())
 				.build();
 	}
 
 	@Override
-	public ElementGetDetails elementToElementGetDetails(Element element) {
+	public ElementDtoGetDetails elementToElementGetDetails(Element element) {
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementGetDetails.builder()
+		return 	ElementDtoGetDetails.builder()
 				.quantity(element.getQuantity())
 				.criticalQuantity(element.getCriticalQuantity())
 				.nameOfElement(element.getNameOfElement())

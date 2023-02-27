@@ -1,4 +1,6 @@
-package com.kamil.servicExpert.model.Element;
+package com.kamil.servicExpert.model.Note;
+
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,8 +17,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ElementSlim {
+public class NoteDtoGet {
+
+	@JsonProperty("description")
+	private String description;
 	
-	@JsonProperty("name_of_element")
-	private String nameOfElement;
+	@JsonProperty("date_created")
+	private Date dateCreated;
 }

@@ -12,14 +12,6 @@ public interface ElementRepository extends JpaRepository<Element, Long> {
 
 	List<Element> findByTypeId(long typeId);
 
-	List<Element> findByQuantity(int quantity);
-
-	List<Element> findByPriceOfElement(int priceOfElement);
-
-	List<Element> findByNameOfElement(String nameOfElement);
-	
-	List<Element> findElementsByRepairsId(Long repairId);
-
 	@Transactional
 	void deleteByTypeId(long typeId);
 }

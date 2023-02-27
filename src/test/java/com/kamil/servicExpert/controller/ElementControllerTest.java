@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamil.servicExpert.db.mapper.ElementMapper;
 import com.kamil.servicExpert.db.mapper.RepairMapper;
 import com.kamil.servicExpert.db.model.Element;
-import com.kamil.servicExpert.db.model.Repair;
 import com.kamil.servicExpert.service.ElementService;
 
 @WebMvcTest(ElementController.class)
@@ -66,7 +66,7 @@ class ElementControllerTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		List<Element> elements = List.of(element);
 		// when
@@ -105,7 +105,7 @@ class ElementControllerTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		List<Element> elements = List.of(element);
 		// when
@@ -131,56 +131,8 @@ class ElementControllerTest {
 	}
 
 	@Test
-	void testGetAllElementsByRepairId() throws Exception  {
-		// given
-		Long id = 1L;
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
-				.build();
-		List<Element> elements = List.of(element);
-		// when
-		when(elementService.findElementsByRepairId(id)).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/repairs/{id}/elements", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(elements.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllElementsByRepairIdNoContent() throws Exception  {
-		// given
-		Long id = 1L;
-		List<Element> elements = List.of();
-		// when
-		when(elementService.findElementsByRepairId(id)).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/repairs/{id}/elements", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
 	void testGetAllRepairsByElementId() throws Exception  {
 
-	}
-	
-	@Test
-	void testGetAllRepairsByElementIdNoContent() throws Exception  {
-		// given
-		Long id = 1L;
-		List<Repair> repairs = List.of();
-		// when
-		when(elementService.findRepairsByElementsId(id)).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/repairs/{id}/elements", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
 	}
 
 	@Test
@@ -193,7 +145,7 @@ class ElementControllerTest {
 				.quantity(1)
 				.criticalQuantity(2)
 				.nameOfElement("nameOfElement")
-				.priceOfElement(20)
+				.priceOfElement(BigDecimal.valueOf(20))
 				.build();
 		// when
 		when(elementService.save(element)).thenReturn(element);
@@ -245,18 +197,6 @@ class ElementControllerTest {
 		doNothing().when(elementService).deleteByTypeId(id);
 		// then
 		mockMvc.perform(delete("/api/types/{id}/elements", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteElementFromRepair() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(elementService).deleteElementFromRepair(id, id);
-		// then
-		mockMvc.perform(delete("/api/repairs/{repairId}/elements/{elementId}", id, id))
 				.andExpect(status().isNoContent())
 				.andDo(print());
 	}

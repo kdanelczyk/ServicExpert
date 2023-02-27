@@ -3,16 +3,16 @@ package com.kamil.servicExpert.db.mapper;
 import org.mapstruct.Mapper;
 
 import com.kamil.servicExpert.db.model.Repair;
-import com.kamil.servicExpert.model.Repair.RepairGet;
-import com.kamil.servicExpert.model.Repair.RepairGetDetails;
-import com.kamil.servicExpert.model.Repair.RepairPost;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 
 @Mapper(componentModel = "spring")
 public interface RepairMapper {
 	
-	Repair repairInputToRepair(RepairPost repairPost);
+	Repair repairInputToRepair(RepairDtoPost repairDtoPost);
 	
-	RepairGet repairToRepairGet(Repair device);
+	RepairDtoGet repairToRepairGet(Repair device);
 	
-	RepairGetDetails repairToRepairGetDetails(Repair repair);
+	RepairDtoGetDetails repairToRepairGetDetails(Repair repair);
 }

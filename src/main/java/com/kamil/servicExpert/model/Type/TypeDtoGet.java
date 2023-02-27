@@ -1,8 +1,7 @@
-package com.kamil.servicExpert.model.Note;
+package com.kamil.servicExpert.model.Type;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +15,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class NotePost {
-	
-	@JsonProperty("description")
-	@NotNull(message = "Note is required.")
-	private String description;
+public class TypeDtoGet {
+
+	@JsonProperty("type_name")
+	private String nameOfType;
 }
