@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,23 +112,6 @@ class RepairServiceTest {
         verify(repairService, times(2)).findByUserId(id);
 	}
 
-	@Test
-	void testFindByDateCreated() {
-		// Given
-		Date date = new Date();
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// When
-		when(repairService.findByDateCreated(date)).thenReturn(repairs);
-		// Then
-        assertEquals(repairService.findByDateCreated(date), repairs);
-        assertEquals(repairService.findByDateCreated(date).isEmpty(), false);
-        verify(repairService, times(2)).findByDateCreated(date);
-	}
 
 	@Test
 	void testFindAllEmpty() {

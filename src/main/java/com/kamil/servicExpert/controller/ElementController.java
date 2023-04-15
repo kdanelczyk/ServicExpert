@@ -1,7 +1,6 @@
 package com.kamil.servicExpert.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.mapper.ElementMapper;
 import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.model.Element.ElementDtoGet;
 import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
@@ -34,7 +32,6 @@ import lombok.AllArgsConstructor;
 public class ElementController {
 
 	private ElementService elementService;
-	private ElementMapper elementMapper;
 
 	@GetMapping("/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -42,10 +39,7 @@ public class ElementController {
 		if (elementService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(elementService.findAll()
-				.stream()
-				.map(elementMapper::elementToElementGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(elementService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllElements())
@@ -62,7 +56,7 @@ public class ElementController {
 		if (elementService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(elementMapper.elementToElementGetDetails(elementService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(elementService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getElementById(id))
@@ -71,10 +65,6 @@ public class ElementController {
 						.methodOn(this.getClass())
 						.getAllElements())
 						.withRel("all-elements"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.updateElement(id, elementService.findById(id).get()))
-						.withRel("update-element"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.deleteElement(id))
@@ -88,10 +78,7 @@ public class ElementController {
 		if (elementService.findByTypeId(typeId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(elementService.findByTypeId(typeId)
-				.stream()
-				.map(elementMapper::elementToElementGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(elementService.findByTypeId(typeId),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllElementsByTypeId(typeId))
@@ -108,15 +95,15 @@ public class ElementController {
 
 	@PostMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Element> createElementForType(@PathVariable(value = "typeId") Long typeId,
+	public ResponseEntity<ElementDtoGetDetails> createElementForType(@PathVariable(value = "typeId") Long typeId,
 			@Valid @RequestBody ElementDtoPost elementRequest) {
-		return new ResponseEntity<>(elementService.createElementForType(typeId, elementMapper.elementInputToElement(elementRequest)), HttpStatus.CREATED);
+		return new ResponseEntity<>(elementService.createElementForType(typeId, elementRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/elements/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Element> updateElement(@PathVariable("id") long id,
-			@Valid @RequestBody Element elementRequest) {
+	public ResponseEntity<ElementDtoGetDetails> updateElement(@PathVariable("id") long id,
+			@Valid @RequestBody ElementDtoPost elementRequest) {
 		if (elementService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

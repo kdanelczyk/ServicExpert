@@ -1,6 +1,5 @@
 package com.kamil.servicExpert.repository;
 
-import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,11 +13,10 @@ public interface RepairRepository extends JpaRepository<Repair, Long> {
 	
 	List<Repair> findByUserId(Long userId);
 
-	List<Repair> findByDateCreated(Date dateCreated);
-
 	@Transactional
 	void deleteByDeviceId(long deviceId);
 	
 	@Transactional
 	void deleteByUserId(long userId);
+	
 }

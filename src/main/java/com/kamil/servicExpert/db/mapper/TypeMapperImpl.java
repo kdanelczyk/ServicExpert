@@ -9,21 +9,21 @@ import com.kamil.servicExpert.model.Type.TypeDtoGet;
 import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
 import com.kamil.servicExpert.model.Type.TypeDtoPost;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Component
 public class TypeMapperImpl implements TypeMapper{
 	
 	ElementMapper elementMapper;
-	
-	public TypeMapperImpl(ElementMapper elementMapper) {
-		this.elementMapper = elementMapper;
-	}
 
 	@Override
 	public Type typeInputToType(TypeDtoPost typeDtoPost) {
 		if(typeDtoPost == null) {
 			return null;
 		}		
-		return 	Type.builder()
+		return 	Type
+				.builder()
 				.nameOfType(typeDtoPost.getNameOfType())
 				.build();
 	}
@@ -33,7 +33,8 @@ public class TypeMapperImpl implements TypeMapper{
 		if(type == null) {
 			return null;
 		}		
-		return 	TypeDtoGet.builder()
+		return 	TypeDtoGet
+				.builder()
 				.nameOfType(type.getNameOfType())
 				.build();
 	}
@@ -43,7 +44,8 @@ public class TypeMapperImpl implements TypeMapper{
 		if(type == null) {
 			return null;
 		}		
-		return 	TypeDtoGetDetails.builder()
+		return 	TypeDtoGetDetails
+				.builder()
 				.nameOfType(type.getNameOfType())
 				.elements(type.getElements()
 						.stream()

@@ -1,19 +1,12 @@
 package com.kamil.servicExpert.controller;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,49 +28,37 @@ import com.kamil.servicExpert.service.UserService;
 public class AuthController {
 	
 	AuthService authService;
-	AuthenticationManager authenticationManager;
 	UserService userService;
 	RoleRepository roleRepository;
-	PasswordEncoder encoder;
 	JwtUtils jwtUtils;
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
-
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(userLoginRequest.getUsername(), userLoginRequest.getPassword()));
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
-
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(
-				new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+			UserDetailsImpl userDetails = authService.authenticateUser(userLoginRequest);
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtUtils.generateJwtCookie(userDetails).toString()).body(
+				new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), userDetails.getAuthorities()
+						.stream()
+						.map(item -> item.getAuthority())
+						.collect(Collectors.toList())));
 	}
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody UserSignupRequest signUpRequest) {
 		if (userService.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Username is already in use."));
+			return ResponseEntity.badRequest().body(new MessageResponse("Username is already in use. Please try another username."));
 		}
 
 		if (userService.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Email is already in use."));
+			return ResponseEntity.badRequest().body(new MessageResponse("Email is already in use. Please try another email."));
 		}
 		authService.registerUser(signUpRequest);
-		return ResponseEntity.ok(new MessageResponse("User registered."));
+		return ResponseEntity.ok(new MessageResponse("User registered correctly."));
 	}
 
 	@PostMapping("/signout")
 	public ResponseEntity<?> logoutUser() {
-		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtUtils.getCleanJwtCookie().toString())
 				.body(new MessageResponse("User logged off."));
 	}
+	
 }

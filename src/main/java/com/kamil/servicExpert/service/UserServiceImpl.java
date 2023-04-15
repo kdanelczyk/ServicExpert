@@ -2,11 +2,15 @@ package com.kamil.servicExpert.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.db.mapper.UserMapper;
 import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
+import com.kamil.servicExpert.model.User.UserDtoGet;
+import com.kamil.servicExpert.model.User.UserDtoGetDetails;
 import com.kamil.servicExpert.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -16,6 +20,7 @@ import lombok.AllArgsConstructor;
 public class UserServiceImpl implements UserService{
 
 	private UserRepository userRepository;
+	private UserMapper userMapper;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -26,8 +31,9 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public Optional<User> findById(Long id) {
-		return userRepository.findById(id);
+	public Optional<UserDtoGetDetails> findById(Long id) {
+		return Optional.of(userMapper.usersToUserGetDetails(userRepository.findById(id).get()));
+		
 	}
 	
 	@Override
@@ -41,24 +47,27 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public List<User> findAll() {
-		return userRepository.findAll();
+	public List<UserDtoGet> findAll() {
+		return userRepository.findAll()
+				.stream()
+				.map(userMapper::userToUserGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public User save(User type) {
-		return userRepository.save(type);
+	public UserDtoGetDetails save(User user) {
+		return userMapper.usersToUserGetDetails(userRepository.save(user));
 	}
 
 	@Override
-	public User updateUser(Long id, User user) {
-		User userToUpdate = findById(id).get();
+	public UserDtoGetDetails updateUser(Long id, User user) {
+		User userToUpdate = userRepository.findById(id).get();
 		userToUpdate.setUsername(user.getUsername());
 		userToUpdate.setName(user.getName());
 		userToUpdate.setSurname(user.getSurname());
 		userToUpdate.setUserPhoneNumber(user.getUserPhoneNumber());
 		save(userToUpdate);
-		return user;
+		return userMapper.usersToUserGetDetails(user);
 	}
 
 	@Override

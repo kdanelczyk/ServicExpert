@@ -1,7 +1,6 @@
 package com.kamil.servicExpert.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.mapper.RepairMapper;
 import com.kamil.servicExpert.db.model.Repair;
 import com.kamil.servicExpert.model.Repair.RepairDtoGet;
 import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
@@ -34,7 +32,6 @@ import lombok.AllArgsConstructor;
 public class RepairController {
 
 	private RepairService repairService;
-	private RepairMapper repairMapper;
 	
 	@GetMapping("/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -42,10 +39,7 @@ public class RepairController {
 		if (repairService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(repairService.findAll()
-				.stream()
-				.map(repairMapper::repairToRepairGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(repairService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllRepairs())
@@ -62,7 +56,7 @@ public class RepairController {
 		if (repairService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(repairMapper.repairToRepairGetDetails(repairService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(repairService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getRepairById(id))
@@ -71,10 +65,6 @@ public class RepairController {
 						.methodOn(this.getClass())
 						.getAllRepairs())
 						.withRel("all-repairs"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.updateRepair(id, repairService.findById(id).get()))
-						.withRel("update-repair"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.deleteRepair(id))
@@ -88,10 +78,7 @@ public class RepairController {
 		if (repairService.findByDeviceId(deviceId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(repairService.findByDeviceId(deviceId)
-				.stream()
-				.map(repairMapper::repairToRepairGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(repairService.findByDeviceId(deviceId),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllRepairsByDeviceId(deviceId))
@@ -112,10 +99,7 @@ public class RepairController {
 		if (repairService.findByUserId(userId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(repairService.findByUserId(userId)
-				.stream()
-				.map(repairMapper::repairToRepairGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(repairService.findByUserId(userId),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllRepairsByUserId(userId))
@@ -132,14 +116,14 @@ public class RepairController {
 
 	@PostMapping("/devices/{deviceId}/users/{userId}/repairs")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Repair> createRepair(@PathVariable(value = "deviceId") Long deviceId,
+	public ResponseEntity<RepairDtoGetDetails> createRepair(@PathVariable(value = "deviceId") Long deviceId,
 			@PathVariable(value = "userId") Long userId, @Valid @RequestBody RepairDtoPost repairRequest) {
-		return new ResponseEntity<>(repairService.createRepair(deviceId, userId, repairMapper.repairInputToRepair(repairRequest)), HttpStatus.CREATED);
+		return new ResponseEntity<>(repairService.createRepair(deviceId, userId, repairRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/repairs/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Repair> updateRepair(@PathVariable("id") long id, @Valid @RequestBody Repair repairRequest) {
+	public ResponseEntity<RepairDtoGetDetails> updateRepair(@PathVariable("id") long id, @Valid @RequestBody RepairDtoPost repairRequest) {
 		if (repairService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -148,7 +132,7 @@ public class RepairController {
 
 	@PutMapping("/repairs/{repairId}/elements/{elementId}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Repair> addElement(@PathVariable(value = "repairId") Long repairId,
+	public ResponseEntity<RepairDtoGetDetails> addElement(@PathVariable(value = "repairId") Long repairId,
 			@PathVariable(value = "elementId") Long elementId) {
 		return new ResponseEntity<>(repairService.addElementToRepair(repairId, elementId), HttpStatus.OK);
 	}
@@ -188,4 +172,5 @@ public class RepairController {
 		repairService.deleteElementFromRepair(repairId, elementId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
 }

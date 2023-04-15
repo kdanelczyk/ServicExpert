@@ -1,7 +1,6 @@
 package com.kamil.servicExpert.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.kamil.servicExpert.db.mapper.NoteMapper;
 import com.kamil.servicExpert.db.model.Note;
 import com.kamil.servicExpert.model.Note.NoteDtoGet;
 import com.kamil.servicExpert.model.Note.NoteDtoPost;
@@ -32,7 +30,6 @@ import lombok.AllArgsConstructor;
 public class NoteController {
 	
 	private NoteService noteService;
-	private NoteMapper noteMapper;
 	
 	@GetMapping("/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -40,10 +37,7 @@ public class NoteController {
 		if (noteService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(noteService.findAll()
-				.stream()
-				.map(noteMapper::noteToNoteGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(noteService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllNotes())
@@ -60,7 +54,7 @@ public class NoteController {
 		if (noteService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(noteMapper.noteToNoteGet(noteService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(noteService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getNoteById(id))
@@ -69,10 +63,6 @@ public class NoteController {
 						.methodOn(this.getClass())
 						.getAllNotes())
 						.withRel("all-notes"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.updateNote(id, noteService.findById(id).get()))
-						.withRel("update-note"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.deleteNote(id))
@@ -85,10 +75,7 @@ public class NoteController {
 		if (noteService.findByUserId(userId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(noteService.findByUserId(userId)
-				.stream()
-				.map(noteMapper::noteToNoteGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(noteService.findByUserId(userId),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllNotesByUserId(userId))
@@ -105,20 +92,20 @@ public class NoteController {
 
 	@PostMapping("/users/{userId}/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> createNoteForUser(@PathVariable(value = "userId") Long userId,
+	public ResponseEntity<NoteDtoGet> createNoteForUser(@PathVariable(value = "userId") Long userId,
 			@Valid @RequestBody NoteDtoPost noteRequest) {
-		return new ResponseEntity<>(noteService.createNoteForUser(userId, noteMapper.noteInputToNote(noteRequest)),HttpStatus.CREATED);
+		return new ResponseEntity<>(noteService.createNoteForUser(userId, noteRequest),HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/notes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> createNote(@Valid @RequestBody NoteDtoPost noteRequest) {
-		return new ResponseEntity<>(noteService.createNote(noteMapper.noteInputToNote(noteRequest)), HttpStatus.CREATED);
+	public ResponseEntity<NoteDtoGet> createNote(@Valid @RequestBody NoteDtoPost noteRequest) {
+		return new ResponseEntity<>(noteService.createNote(noteRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/notes/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Note> updateNote(@PathVariable("id") long id, @Valid @RequestBody Note noteRequest) {
+	public ResponseEntity<NoteDtoGet> updateNote(@PathVariable("id") long id, @Valid @RequestBody NoteDtoPost noteRequest) {
 		if (noteService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -145,4 +132,5 @@ public class NoteController {
 		noteService.deleteAll();
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
 }

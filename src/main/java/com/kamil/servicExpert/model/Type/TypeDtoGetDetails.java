@@ -25,4 +25,5 @@ public class TypeDtoGetDetails {
 	
 	@JsonProperty("elements")
 	private List<ElementDtoGetSlim> elements;
+	
 }

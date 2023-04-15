@@ -3,12 +3,18 @@ package com.kamil.servicExpert.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.db.mapper.DeviceMapper;
 import com.kamil.servicExpert.db.model.Device;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 import com.kamil.servicExpert.repository.DeviceRepository;
+import com.kamil.servicExpert.repository.TypeRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -17,7 +23,8 @@ import lombok.AllArgsConstructor;
 public class DeviceServiceImpl implements DeviceService{
 
 	private DeviceRepository deviceRepository;
-	private TypeService typeService;
+	private TypeRepository typeRepository;
+	private DeviceMapper deviceMapper;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -28,48 +35,57 @@ public class DeviceServiceImpl implements DeviceService{
 	}
 
 	@Override
-	public Optional<Device> findById(Long id) {
-		return deviceRepository.findById(id);
+	public Optional<DeviceDtoGetDetails> findById(Long id) {
+		return Optional.of(deviceMapper.deviceToDeviceGetDetails(deviceRepository.findById(id).get()));
 	}
 
 	@Override
-	public List<Device> findByRepaired(boolean repaired) {
-		return deviceRepository.findByRepaired(repaired);
+	public List<DeviceDtoGet> findByRepaired(boolean repaired) {
+		return deviceRepository.findByRepaired(repaired)
+			.stream()
+			.map(deviceMapper::deviceToDeviceGet)
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Device> findByTypeId(long typeId) {
-		typeService.existsById(typeId);
-		return deviceRepository.findByTypeId(typeId);
+	public List<DeviceDtoGet> findByTypeId(long typeId) {
+		typeRepository.existsById(typeId);
+		return deviceRepository.findByTypeId(typeId)
+				.stream()
+				.map(deviceMapper::deviceToDeviceGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Device> findAll() {
-		return deviceRepository.findAll();
+	public List<DeviceDtoGet> findAll() {
+		return deviceRepository.findAll()
+				.stream()
+				.map(deviceMapper::deviceToDeviceGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Device save(Device device) {
-		return deviceRepository.save(device);
+	public DeviceDtoGetDetails save(DeviceDtoPost deviceDtoPost) {
+		return deviceMapper.deviceToDeviceGetDetails(deviceRepository.save(deviceMapper.devicePostToDevice(deviceDtoPost)));
 	}
 
 	@Override
-	public Device createDeviceForType(Long typeId, Device device) {
-		return save(Device.builder()
-				.customerPhoneNumber(device.getCustomerPhoneNumber())
-				.nameOfCustomer(device.getNameOfCustomer())
-				.type(typeService.findById(typeId).get())
+	public DeviceDtoGetDetails createDeviceForType(Long typeId, DeviceDtoPost deviceDtoPost) {
+		return deviceMapper.deviceToDeviceGetDetails(deviceRepository.save(Device.builder()
+				.customerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber())
+				.nameOfCustomer(deviceDtoPost.getNameOfCustomer())
+				.type(typeRepository.findById(typeId).get())
 				.dateOfReceipt(new Date())
-				.repaired(false).build());
+				.repaired(false).build()));
 	}
 
 	@Override
-	public Device updateDevice(Long id, Device device) {
-		Device deviceToUpdate = findById(id).get();
-		deviceToUpdate.setNameOfCustomer(device.getNameOfCustomer());
-		deviceToUpdate.setCustomerPhoneNumber(device.getCustomerPhoneNumber());
-		save(deviceToUpdate);
-		return deviceToUpdate;
+	public DeviceDtoGetDetails updateDevice(Long id, DeviceDtoPost deviceDtoPost) {
+		Device deviceToUpdate = deviceRepository.findById(id).get();
+		deviceToUpdate.setNameOfCustomer(deviceDtoPost.getNameOfCustomer());
+		deviceToUpdate.setCustomerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber());
+		deviceRepository.save(deviceToUpdate);
+		return deviceMapper.deviceToDeviceGetDetails(deviceToUpdate);
 	}
 
 	@Override
@@ -85,7 +101,7 @@ public class DeviceServiceImpl implements DeviceService{
 
 	@Override
 	public void deleteByTypeId(long typeId) {
-		typeService.existsById(typeId);
+		typeRepository.existsById(typeId);
 		deviceRepository.deleteById(typeId);
 	}
 	

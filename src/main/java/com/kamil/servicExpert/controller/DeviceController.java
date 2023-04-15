@@ -1,7 +1,6 @@
 package com.kamil.servicExpert.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.mapper.DeviceMapper;
 import com.kamil.servicExpert.db.model.Device;
 import com.kamil.servicExpert.model.Device.DeviceDtoGet;
 import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
@@ -35,18 +33,14 @@ import lombok.AllArgsConstructor;
 public class DeviceController {
 
 	private DeviceService deviceService;
-	private DeviceMapper deviceMapper;
-
+	
 	@GetMapping("/devices/repaired")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<CollectionModel<DeviceDtoGet>> findByRepaired() {
 		if (deviceService.findByRepaired(true).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(deviceService.findByRepaired(true)
-				.stream()
-				.map(deviceMapper::deviceToDeviceGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(deviceService.findByRepaired(true),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.findByRepaired())
@@ -67,10 +61,7 @@ public class DeviceController {
 		if (deviceService.findByRepaired(false).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(deviceService.findByRepaired(false)
-				.stream()
-				.map(deviceMapper::deviceToDeviceGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(deviceService.findByRepaired(false),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.findByNotRepaired())
@@ -91,10 +82,7 @@ public class DeviceController {
 		if (deviceService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(deviceService.findAll()
-				.stream()
-				.map(deviceMapper::deviceToDeviceGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(deviceService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllDevices())
@@ -119,7 +107,7 @@ public class DeviceController {
 		if (deviceService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(deviceMapper.deviceToDeviceGetDetails(deviceService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(deviceService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getDeviceById(id))
@@ -132,10 +120,6 @@ public class DeviceController {
 						.methodOn(RepairController.class)
 						.getAllRepairsByDeviceId(id))
 						.withRel("all-repairs-by-device-id"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
-						.updateDevice(id, deviceService.findById(id).get()))
-						.withRel("update-device"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.deleteDevice(id))
@@ -152,10 +136,7 @@ public class DeviceController {
 		if (deviceService.findByTypeId(typeId).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(deviceService.findByTypeId(typeId)
-				.stream()
-				.map(deviceMapper::deviceToDeviceGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(deviceService.findByTypeId(typeId),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllDevicesByTypeId(typeId))
@@ -172,14 +153,14 @@ public class DeviceController {
 
 	@PostMapping("/types/{typeId}/devices")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Device> createDeviceForType(@PathVariable(value = "typeId") Long typeId,
+	public ResponseEntity<DeviceDtoGetDetails> createDeviceForType(@PathVariable(value = "typeId") Long typeId,
 			@Valid @RequestBody DeviceDtoPost deviceRequest) {
-		return new ResponseEntity<>(deviceService.createDeviceForType(typeId, deviceMapper.deviceInputToDevice(deviceRequest)), HttpStatus.CREATED);
+		return new ResponseEntity<>(deviceService.createDeviceForType(typeId, deviceRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/devices/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Device> updateDevice(@PathVariable("id") long id, @Valid @RequestBody Device deviceRequest) {
+	public ResponseEntity<DeviceDtoGetDetails> updateDevice(@PathVariable("id") long id, @Valid @RequestBody DeviceDtoPost deviceRequest) {
 		if (deviceService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -206,4 +187,5 @@ public class DeviceController {
 		deviceService.deleteByTypeId(typeId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
 }

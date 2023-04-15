@@ -1,12 +1,18 @@
 package com.kamil.servicExpert.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.db.mapper.TypeMapper;
 import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
+import com.kamil.servicExpert.model.Type.TypeDtoGet;
+import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
+import com.kamil.servicExpert.model.Type.TypeDtoPost;
 import com.kamil.servicExpert.repository.TypeRepository;
 
 import lombok.AllArgsConstructor;
@@ -16,6 +22,7 @@ import lombok.AllArgsConstructor;
 public class TypeServiceImpl implements TypeService{
 
     private TypeRepository typeRepository;
+    private TypeMapper typeMapper;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -26,33 +33,40 @@ public class TypeServiceImpl implements TypeService{
 	}
 
 	@Override
-	public Optional<Type> findById(Long id) {
-		return typeRepository.findById(id);
+	public Optional<TypeDtoGetDetails> findById(Long id) {
+		return Optional.of(typeMapper.typesToTypeGetDetails(typeRepository.findById(id).get()));
+		
 	}
 
 	@Override
-	public List<Type> findAll() {
-		return typeRepository.findAll();
+	public List<TypeDtoGet> findAll() {
+		return typeRepository.findAll()
+				.stream()
+				.map(typeMapper::typeToTypeGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Type save(Type type) {
-		return typeRepository.save(type);
+	public TypeDtoGetDetails save(TypeDtoPost typeDtoPost) {
+		return typeMapper.typesToTypeGetDetails(typeRepository.save(typeMapper.typeInputToType(typeDtoPost)));
+		
 	}
 
 	@Override
-	public Type createType(Type type) {
-		return save(Type.builder()
-				.nameOfType(type.getNameOfType())
-				.build());
+	public TypeDtoGetDetails createType(TypeDtoPost typeDtoPost) {
+		return typeMapper.typesToTypeGetDetails(typeRepository.save(Type.builder()
+				.nameOfType(typeDtoPost.getNameOfType())
+				.devices(new ArrayList<>())
+				.elements(new ArrayList<>())
+				.build()));
 	}
 
 	@Override
-	public Type updateType(Long id, Type type) {
-		Type typeToUpdate = findById(id).get();
-		typeToUpdate.setNameOfType(type.getNameOfType());
-		save(typeToUpdate);
-		return typeToUpdate;
+	public TypeDtoGetDetails updateType(Long id, TypeDtoPost typeDtoPost) {
+		Type typeToUpdate = typeRepository.findById(id).get();
+		typeToUpdate.setNameOfType(typeDtoPost.getNameOfType());
+		typeRepository.save(typeToUpdate);
+		return typeMapper.typesToTypeGetDetails(typeToUpdate);
 	}
 	
 	@Override

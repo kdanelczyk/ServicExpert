@@ -37,10 +37,10 @@ public class UsedElement {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column(name = "name_of_element")
+	@Column(name = "element_name")
 	private String nameOfElement;
 	
-	@Column(name = "price_of_element")
+	@Column(name = "element_price")
 	private BigDecimal priceOfElement;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

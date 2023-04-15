@@ -6,8 +6,12 @@ import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.model.Element.ElementDtoGet;
 import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
 import com.kamil.servicExpert.model.Element.ElementDtoPost;
+
+import lombok.AllArgsConstructor;
+
 import com.kamil.servicExpert.model.Element.ElementDtoGetSlim;
 
+@AllArgsConstructor
 @Component
 public class ElementMapperImpl implements ElementMapper{
 
@@ -16,7 +20,8 @@ public class ElementMapperImpl implements ElementMapper{
 		if(elementDtoPost == null) {
 			return null;
 		}		
-		return 	Element.builder()
+		return 	Element
+				.builder()
 				.quantity(elementDtoPost.getQuantity())
 				.criticalQuantity(elementDtoPost.getCriticalQuantity())
 				.nameOfElement(elementDtoPost.getNameOfElement())
@@ -29,7 +34,8 @@ public class ElementMapperImpl implements ElementMapper{
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementDtoGetSlim.builder()
+		return 	ElementDtoGetSlim
+				.builder()
 				.nameOfElement(element.getNameOfElement())
 				.build();
 	}
@@ -39,7 +45,8 @@ public class ElementMapperImpl implements ElementMapper{
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementDtoGet.builder()
+		return 	ElementDtoGet
+				.builder()
 				.quantity(element.getQuantity())
 				.nameOfElement(element.getNameOfElement())
 				.build();
@@ -50,7 +57,8 @@ public class ElementMapperImpl implements ElementMapper{
 		if(element == null) {
 			return null;
 		}		
-		return 	ElementDtoGetDetails.builder()
+		return 	ElementDtoGetDetails
+				.builder()
 				.quantity(element.getQuantity())
 				.criticalQuantity(element.getCriticalQuantity())
 				.nameOfElement(element.getNameOfElement())

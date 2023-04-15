@@ -41,7 +41,7 @@ public class Device {
 	@Column(name = "customer_phone_number")
 	private long customerPhoneNumber;
 
-	@Column(name = "name_of_customer")
+	@Column(name = "customer_name")
 	private String nameOfCustomer;
 
 	@Column(name = "date_of_receipt")
@@ -58,4 +58,5 @@ public class Device {
 
 	@OneToMany(mappedBy = "device")
 	private List<Repair> repairs;
+	
 }

@@ -14,4 +14,5 @@ public interface PdfRepairsGenerator {
 
 	public byte[] generate(List<Repair> repairList, ByteArrayOutputStream byteArrayOutputStream) 
 			throws DocumentException, IOException;
+	
 }

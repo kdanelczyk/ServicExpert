@@ -5,9 +5,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kamil.servicExpert.EmailSender.EmailSender;
-import com.kamil.servicExpert.service.ElementService;
+import com.kamil.servicExpert.repository.ElementRepository;
+import com.kamil.servicExpert.repository.RepairRepository;
 import com.kamil.servicExpert.service.NoteService;
-import com.kamil.servicExpert.service.RepairService;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -17,8 +17,8 @@ import lombok.AllArgsConstructor;
 @Component
 public class Scheduler {
 
-	private RepairService repairService;
-	private ElementService elementService;
+	private RepairRepository repairRepository;
+	private ElementRepository elementRepository;
 	private NoteService noteService;
 	private EmailSender emailSender;
 
@@ -26,19 +26,20 @@ public class Scheduler {
     @Scheduled(cron = "0 0 1 * * MON")
 	public void emailSender(){
 	    try {
-			emailSender.sendReportsEmail(repairService.findAll(), elementService.findAll());
-		} catch (MessagingException e) {
+			emailSender.sendReportsEmail(repairRepository.findAll(), elementRepository.findAll());
+		} catch (MessagingException error) {
 			
-			e.printStackTrace();
-		} catch (IOException e) {
+			error.printStackTrace();
+		} catch (IOException error) {
 			
-			e.printStackTrace();
+			error.printStackTrace();
 		}
 	}
 	
 	@Transactional
-	@Scheduled(cron = "0 0 1 * * FRI")
+	@Scheduled(cron = "0 0 1 * * MON")
 	public void elementChecker() {
 		noteService.elementChecker();
 	}
+	
 }

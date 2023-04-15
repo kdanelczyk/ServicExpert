@@ -1,7 +1,5 @@
 package com.kamil.servicExpert.controller;
 
-import java.util.stream.Collectors;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -17,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.mapper.TypeMapper;
-import com.kamil.servicExpert.db.model.Type;
 import com.kamil.servicExpert.model.Type.TypeDtoGet;
 import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
 import com.kamil.servicExpert.model.Type.TypeDtoPost;
@@ -33,7 +29,6 @@ import lombok.AllArgsConstructor;
 public class TypeController {
 
 	private TypeService typeService;
-    private TypeMapper typeMapper;
 
 	@GetMapping("/types")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -41,10 +36,7 @@ public class TypeController {
 		if (typeService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(typeService.findAll()
-				.stream()
-				.map(typeMapper::typeToTypeGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(typeService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllTypes())
@@ -61,7 +53,7 @@ public class TypeController {
 		if (typeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(typeMapper.typesToTypeGetDetails(typeService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(typeService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getTypeById(id))
@@ -80,10 +72,6 @@ public class TypeController {
 						.withRel("all-elements-of-types"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
-						.updateType(id, typeService.findById(id).get()))
-						.withRel("update-type"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
 						.deleteType(id))
 						.withRel("delete-type"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
@@ -98,17 +86,17 @@ public class TypeController {
 
 	@PostMapping("/types")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Type> createType(@Valid @RequestBody TypeDtoPost typeRequest) {
-		return new ResponseEntity<>(typeService.createType(typeMapper.typeInputToType(typeRequest)), HttpStatus.CREATED);
+	public ResponseEntity<TypeDtoGetDetails> createType(@Valid @RequestBody TypeDtoPost typeRequest) {
+		return new ResponseEntity<>(typeService.createType(typeRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/types/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<Type> updateType(@PathVariable("id") long id, @Valid @RequestBody Type type) {
+	public ResponseEntity<TypeDtoGetDetails> updateType(@PathVariable("id") long id, @Valid @RequestBody TypeDtoPost typeRequest) {
 		if (typeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(typeService.updateType(id, type), HttpStatus.OK);
+		return new ResponseEntity<>(typeService.updateType(id, typeRequest), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/types/{id}")

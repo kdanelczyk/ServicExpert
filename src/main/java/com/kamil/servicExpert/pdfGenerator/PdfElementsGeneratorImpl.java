@@ -47,22 +47,22 @@ public class PdfElementsGeneratorImpl implements PdfElementsGenerator{
 		cellForElements.setBackgroundColor(CMYKColor.LIGHT_GRAY);
 		cellForElements.setPadding(5);
 
-		cellForElements.setPhrase(new Phrase("name_of_element", font));
+		cellForElements.setPhrase(new Phrase("element name", font));
 		tableForElements.addCell(cellForElements);
 		
-		cellForElements.setPhrase(new Phrase("element_for_type", font));
+		cellForElements.setPhrase(new Phrase("type element", font));
 		tableForElements.addCell(cellForElements);
 		
-		cellForElements.setPhrase(new Phrase("price_of_element", font));
+		cellForElements.setPhrase(new Phrase("element price", font));
 		tableForElements.addCell(cellForElements);
 		
-		cellForElements.setPhrase(new Phrase("total_price_of_element", font));
+		cellForElements.setPhrase(new Phrase("elements price", font));
 		tableForElements.addCell(cellForElements);
 		
 		cellForElements.setPhrase(new Phrase("quantity", font));
 		tableForElements.addCell(cellForElements);
 		
-		cellForElements.setPhrase(new Phrase("critical_quantity", font));
+		cellForElements.setPhrase(new Phrase("critical quantity", font));
 		tableForElements.addCell(cellForElements);
 		
 		elementList.stream().forEach(element -> {			
@@ -77,6 +77,8 @@ public class PdfElementsGeneratorImpl implements PdfElementsGenerator{
 		report.add(tableForElements);
 		report.close();
 		byte[] bytes = byteArrayOutputStream.toByteArray();
+		
 		return bytes;
 	}
+	
 }

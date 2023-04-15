@@ -13,4 +13,5 @@ public class RepairVisitorImpl implements RepairVisitor{
     public BigDecimal visit(UsedElement usedElement) {
         return usedElement.getPriceOfElement();
     }
+	
 }

@@ -2,12 +2,18 @@ package com.kamil.servicExpert.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.db.mapper.ElementMapper;
 import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
 import com.kamil.servicExpert.repository.ElementRepository;
+import com.kamil.servicExpert.repository.TypeRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -16,7 +22,8 @@ import lombok.AllArgsConstructor;
 public class ElementServiceImpl implements ElementService{
 
 	private ElementRepository elementRepository;
-	private TypeService typeService;
+	private TypeRepository typeRepository;
+	private ElementMapper elementMapper;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -27,44 +34,50 @@ public class ElementServiceImpl implements ElementService{
 	}
 
 	@Override
-	public Optional<Element> findById(Long id) {
-		return elementRepository.findById(id);
+	public Optional<ElementDtoGetDetails> findById(Long id) {
+		return Optional.of(elementMapper.elementToElementGetDetails(elementRepository.findById(id).get()));
 	}
 
 	@Override
-	public List<Element> findByTypeId(long typeId) {
-		typeService.existsById(typeId);
-		return elementRepository.findByTypeId(typeId);
+	public List<ElementDtoGet> findByTypeId(long typeId) {
+		typeRepository.existsById(typeId);
+		return elementRepository.findByTypeId(typeId)
+				.stream()
+				.map(elementMapper::elementToElementGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Element> findAll() {
-		return elementRepository.findAll();
+	public List<ElementDtoGet> findAll() {
+		return elementRepository.findAll()
+				.stream()
+				.map(elementMapper::elementToElementGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Element save(Element element) {
-		return elementRepository.save(element);
+	public ElementDtoGetDetails save(ElementDtoPost elementDtoPost) {
+		return elementMapper.elementToElementGetDetails(elementRepository.save(elementMapper.elementInputToElement(elementDtoPost)));
 	}
 
 	@Override
-	public Element createElementForType(Long typeId, Element element) {
-		return save(Element.builder()
-				.quantity(element.getQuantity())
-				.criticalQuantity(element.getCriticalQuantity())
-				.nameOfElement(element.getNameOfElement())
-				.priceOfElement(element.getPriceOfElement())
-				.type(typeService.findById(typeId).get()).build());
+	public ElementDtoGetDetails createElementForType(Long typeId, ElementDtoPost elementDtoPost) {
+		return elementMapper.elementToElementGetDetails(elementRepository.save(Element.builder()
+				.quantity(elementDtoPost.getQuantity())
+				.criticalQuantity(elementDtoPost.getCriticalQuantity())
+				.nameOfElement(elementDtoPost.getNameOfElement())
+				.priceOfElement(elementDtoPost.getPriceOfElement())
+				.type(typeRepository.findById(typeId).get()).build()));
 	}
 
 	@Override
-	public Element updateElement(Long id, Element element) {
-		Element elementToUpdate = findById(id).get();
-		elementToUpdate.setQuantity(element.getQuantity());
-		elementToUpdate.setNameOfElement(element.getNameOfElement());
-		elementToUpdate.setPriceOfElement(element.getPriceOfElement());
-		save(elementToUpdate);
-		return elementToUpdate;
+	public ElementDtoGetDetails updateElement(Long id, ElementDtoPost elementDtoPost) {
+		Element elementToUpdate = elementRepository.findById(id).get();
+		elementToUpdate.setQuantity(elementDtoPost.getQuantity());
+		elementToUpdate.setNameOfElement(elementDtoPost.getNameOfElement());
+		elementToUpdate.setPriceOfElement(elementDtoPost.getPriceOfElement());
+		elementRepository.save(elementToUpdate);
+		return elementMapper.elementToElementGetDetails(elementToUpdate);
 	}
 
 	@Override
@@ -80,7 +93,7 @@ public class ElementServiceImpl implements ElementService{
 
 	@Override
 	public void deleteByTypeId(long typeId) {
-		typeService.existsById(typeId);
+		typeRepository.existsById(typeId);
 		elementRepository.deleteByTypeId(typeId);
 	}
 

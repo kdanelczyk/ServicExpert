@@ -17,19 +17,15 @@ import jakarta.activation.DataSource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Service
 public class EmailSenderImpl implements EmailSender{
 	
     private JavaMailSender javaMailSender;
     private PdfRepairsGenerator repairsGenerator;
     private PdfElementsGenerator elementsGenerator;
-    
-    public EmailSenderImpl(JavaMailSender javaMailSender, PdfRepairsGenerator repairsGenerator, PdfElementsGenerator elementsGenerator) {
-    	this.javaMailSender = javaMailSender;
-    	this.repairsGenerator = repairsGenerator;
-    	this.elementsGenerator = elementsGenerator;
-    }
 	
     @Override
     public void sendReportsEmail(List<Repair> repairList, List<Element> elementList) throws MessagingException, IOException {
@@ -50,4 +46,5 @@ public class EmailSenderImpl implements EmailSender{
         
         javaMailSender.send(message);
     }
+    
 }

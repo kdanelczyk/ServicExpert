@@ -10,9 +10,10 @@ import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 @Mapper(componentModel = "spring")
 public interface DeviceMapper {
 	
-	Device deviceInputToDevice(DeviceDtoPost deviceDtoPost);
+	Device devicePostToDevice(DeviceDtoPost deviceDtoPost);
 	
 	DeviceDtoGet deviceToDeviceGet(Device device);
 	
 	DeviceDtoGetDetails deviceToDeviceGetDetails(Device device);
+	
 }

@@ -14,4 +14,5 @@ public interface PdfElementsGenerator {
 
 	public byte[] generate(List<Element> elementList, ByteArrayOutputStream byteArrayOutputStream)
 			throws DocumentException, IOException;
+	
 }

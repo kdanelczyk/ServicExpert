@@ -15,4 +15,5 @@ public interface RepairMapper {
 	RepairDtoGet repairToRepairGet(Repair device);
 	
 	RepairDtoGetDetails repairToRepairGetDetails(Repair repair);
+	
 }

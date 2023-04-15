@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +25,7 @@ import lombok.ToString;
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "username"),
 		@UniqueConstraint(columnNames = "email") })
 public class User {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -51,8 +51,7 @@ public class User {
 	@Column(name = "surname")
 	private String surname;
 
-	@Column(name = "userPhoneNumber")
-	@JsonProperty("user_phone_number")
+	@Column(name = "user_phone_number")
 	private long userPhoneNumber;
 
 	@OneToMany(mappedBy = "user")
@@ -66,4 +65,5 @@ public class User {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
+	
 }

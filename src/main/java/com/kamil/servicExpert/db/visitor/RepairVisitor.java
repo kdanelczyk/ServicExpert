@@ -10,4 +10,5 @@ import com.kamil.servicExpert.db.model.UsedElement;
 public interface RepairVisitor {
 
 	BigDecimal visit(UsedElement usedElement);
+	
 }

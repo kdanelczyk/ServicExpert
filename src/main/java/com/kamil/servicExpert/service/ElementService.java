@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Element;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
 
 import jakarta.transaction.Transactional;
 
@@ -15,17 +17,17 @@ public interface ElementService {
 	
 	public boolean existsById(Long id);
 
-	public Optional<Element> findById(Long id);
+	public Optional<ElementDtoGetDetails> findById(Long id);
 
-	public List<Element> findByTypeId(long typeId);
+	public List<ElementDtoGet> findByTypeId(long typeId);
 
-	public List<Element> findAll();
+	public List<ElementDtoGet> findAll();
 	
-	public Element save(Element element);
+	public ElementDtoGetDetails save(ElementDtoPost elementDtoPost);
 	
-	public Element createElementForType(Long typeId, Element element);
+	public ElementDtoGetDetails createElementForType(Long typeId, ElementDtoPost elementDtoPost);
 
-	public Element updateElement(Long id, Element element);
+	public ElementDtoGetDetails updateElement(Long id, ElementDtoPost elementDtoPost);
 	
 	public void deleteById(Long id);
 

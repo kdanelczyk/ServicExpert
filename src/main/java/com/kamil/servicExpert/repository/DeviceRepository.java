@@ -16,4 +16,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
 	@Transactional
 	void deleteByTypeId(long typeId);
+	
 }

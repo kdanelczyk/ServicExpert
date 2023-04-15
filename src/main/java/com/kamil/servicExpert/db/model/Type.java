@@ -32,4 +32,5 @@ public class Type {
 	
 	@OneToMany(mappedBy="type")
 	private List<Element> elements;
+	
 }

@@ -12,5 +12,5 @@ public interface UserMapper {
 	UserDtoGet userToUserGet(User user);
 	
 	UserDtoGetDetails usersToUserGetDetails(User user);
-
+	
 }

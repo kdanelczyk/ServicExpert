@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Device;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,23 +17,24 @@ public interface DeviceService {
 	
 	public boolean existsById(Long id);
 
-	public Optional<Device> findById(Long id);
+	public Optional<DeviceDtoGetDetails> findById(Long id);
 
-	public List<Device> findByRepaired(boolean repaired);
+	public List<DeviceDtoGet> findByRepaired(boolean repaired);
 
-	public List<Device> findByTypeId(long typeId);
+	public List<DeviceDtoGet> findByTypeId(long typeId);
 
-	public List<Device> findAll();
+	public List<DeviceDtoGet> findAll();
 
-	public Device save(Device device);
+	public DeviceDtoGetDetails save(DeviceDtoPost deviceDtoPost);
 	
-	public Device createDeviceForType(Long typeId, Device device);
+	public DeviceDtoGetDetails createDeviceForType(Long typeId, DeviceDtoPost deviceDtoPost);
 	
-	public Device updateDevice(Long id, Device device);
+	public DeviceDtoGetDetails updateDevice(Long id, DeviceDtoPost deviceDtoPost);
 
 	public void deleteById(Long id);
 
 	public void deleteAll();
 
 	public void deleteByTypeId(long typeId);
+	
 }

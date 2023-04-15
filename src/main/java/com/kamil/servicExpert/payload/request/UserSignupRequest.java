@@ -2,8 +2,6 @@ package com.kamil.servicExpert.payload.request;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -14,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSignupRequest {
+	
 	@NotBlank
 	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
 	private String username;
@@ -35,9 +34,9 @@ public class UserSignupRequest {
 	@Column(name = "surname")
 	private String surname;
 
-	@Column(name = "userPhoneNumber")
-	@JsonProperty("user_phone_number")
+	@Column(name = "user_phone_number")
 	private long userPhoneNumber;
     
     private List<String> role;
+    
 }

@@ -1,7 +1,5 @@
 package com.kamil.servicExpert.controller;
 
-import java.util.stream.Collectors;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.mapper.UserMapper;
 import com.kamil.servicExpert.db.model.User;
 import com.kamil.servicExpert.model.User.UserDtoGet;
 import com.kamil.servicExpert.model.User.UserDtoGetDetails;
@@ -29,8 +26,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api")
 public class UserController {
 
-	UserService userService;
-	UserMapper userMapper;
+	private UserService userService;
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -38,10 +34,7 @@ public class UserController {
 		if (userService.findAll().isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return ResponseEntity.ok(CollectionModel.of(userService.findAll()
-				.stream()
-				.map(userMapper::userToUserGet)
-				.collect(Collectors.toList()),
+		return ResponseEntity.ok(CollectionModel.of(userService.findAll(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getAllUsers())
@@ -58,7 +51,7 @@ public class UserController {
 		if (userService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(EntityModel.of(userMapper.usersToUserGetDetails(userService.findById(id).get()),
+		return ResponseEntity.ok(EntityModel.of(userService.findById(id).get(),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
 						.getUserById(id))
@@ -73,10 +66,6 @@ public class UserController {
 						.withRel("all-notes-by-user-id"),
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
 						.methodOn(this.getClass())
-						.updateUser(id, userService.findById(id).get()))
-						.withRel("update-user"),
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
-						.methodOn(this.getClass())
 						.deleteUser(id))
 						.withRel("delete-user"),				
 				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
@@ -87,7 +76,7 @@ public class UserController {
 
 	@PutMapping("/users/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User user) {
+	public ResponseEntity<UserDtoGetDetails> updateUser(@PathVariable("id") long id, @RequestBody User user) {
 		if (userService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

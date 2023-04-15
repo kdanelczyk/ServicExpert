@@ -32,7 +32,7 @@ public class WebSecurityConfig {
 	UserDetailsServiceImpl userDetailsService;
 
 	@Autowired
-	private AuthEntryPointJwt unauthorizedHandler;
+	private AuthEntryPointJwt authEntryPointJwt;
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -41,10 +41,10 @@ public class WebSecurityConfig {
 
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);
-		authProvider.setPasswordEncoder(passwordEncoder());
-		return authProvider;
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+		daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+		return daoAuthenticationProvider;
 	}
 
 	@Bean
@@ -64,7 +64,7 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers("/api/auth/**").permitAll()
 				.antMatchers("/api/test/**").permitAll()
@@ -72,7 +72,7 @@ public class WebSecurityConfig {
 				.authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
 		return http.build();
 	}
+	
 }

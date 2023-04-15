@@ -18,4 +18,5 @@ public interface ElementMapper {
 	ElementDtoGet elementToElementGet(Element element);
 	
 	ElementDtoGetDetails elementToElementGetDetails(Element element);
+	
 }

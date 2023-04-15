@@ -8,15 +8,19 @@ import com.kamil.servicExpert.model.Device.DeviceDtoGet;
 import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
 import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Component
 public class DeviceMapperImpl implements DeviceMapper{
 	
 	@Override
-	public Device deviceInputToDevice(DeviceDtoPost deviceDtoPost) {
+	public Device devicePostToDevice(DeviceDtoPost deviceDtoPost) {
 		if(deviceDtoPost == null) {
 			return null;
 		}		
-		return 	Device.builder()
+		return 	Device
+				.builder()
 				.customerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber())
 				.nameOfCustomer(deviceDtoPost.getNameOfCustomer())
 				.dateOfReceipt(new Date())
@@ -29,7 +33,8 @@ public class DeviceMapperImpl implements DeviceMapper{
 		if(device == null) {
 			return null;
 		}		
-		return 	DeviceDtoGet.builder()
+		return 	DeviceDtoGet
+				.builder()
 				.nameOfCustomer(device.getNameOfCustomer())
 				.repaired(device.isRepaired())
 				.build();
@@ -40,7 +45,8 @@ public class DeviceMapperImpl implements DeviceMapper{
 		if(device == null) {
 			return null;
 		}		
-		return 	DeviceDtoGetDetails.builder()
+		return 	DeviceDtoGetDetails
+				.builder()
 				.customerPhoneNumber(device.getCustomerPhoneNumber())
 				.nameOfCustomer(device.getNameOfCustomer())
 				.dateOfReceipt(device.getDateOfReceipt())

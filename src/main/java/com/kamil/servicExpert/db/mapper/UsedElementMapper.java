@@ -10,5 +10,7 @@ import com.kamil.servicExpert.model.UsedElement.UsedElementDtoSlim;
 public interface UsedElementMapper {
 
 	UsedElement usedElementPostToUsedElement(UsedElementDtoPost usedElement);
+	
 	UsedElementDtoSlim usedElementToUsedElementSlim(UsedElement usedElement);
+	
 }

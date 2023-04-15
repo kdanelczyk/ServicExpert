@@ -10,23 +10,22 @@ import com.kamil.servicExpert.model.Repair.RepairDtoGet;
 import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
 import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Component
 public class RepairMapperImpl implements RepairMapper{
 	
 	DeviceMapper deviceMapper;
 	UsedElementMapper usedElementMapper;
-	
-	public RepairMapperImpl(DeviceMapper deviceMapper, UsedElementMapper usedElementMapper) {
-		this.deviceMapper = deviceMapper;
-		this.usedElementMapper = usedElementMapper;
-	}
 
 	@Override
 	public Repair repairInputToRepair(RepairDtoPost repairDtoPost) {
 		if(repairDtoPost == null) {
 			return null;
 		}		
-		return 	Repair.builder()
+		return 	Repair
+				.builder()
 				.cost(repairDtoPost.getCost())
 				.note(repairDtoPost.getNote())
 				.dateCreated(new Date())
@@ -38,7 +37,8 @@ public class RepairMapperImpl implements RepairMapper{
 		if(repair == null) {
 			return null;
 		}		
-		return 	RepairDtoGet.builder()
+		return 	RepairDtoGet
+				.builder()
 				.cost(repair.getCost())
 				.dateCreated(repair.getDateCreated())
 				.build();
@@ -49,7 +49,8 @@ public class RepairMapperImpl implements RepairMapper{
 		if(repair == null) {
 			return null;
 		}		
-		return 	RepairDtoGetDetails.builder()
+		return 	RepairDtoGetDetails
+				.builder()
 				.dateCreated(repair.getDateCreated())
 				.cost(repair.getCost())
 				.note(repair.getNote())

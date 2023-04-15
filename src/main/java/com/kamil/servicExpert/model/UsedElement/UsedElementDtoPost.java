@@ -21,12 +21,12 @@ import lombok.ToString;
 @ToString
 public class UsedElementDtoPost {
 	
-	@JsonProperty("name_of_element")
+	@JsonProperty("element_name")
 	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
 	private String nameOfElement;
 	
-	@JsonProperty("price_of_element")
-	@NotNull(message = "quantity is required.")
+	@JsonProperty("element_price")
+	@NotNull(message = "price of element is required.")
 	private BigDecimal priceOfElement;
 	
 }

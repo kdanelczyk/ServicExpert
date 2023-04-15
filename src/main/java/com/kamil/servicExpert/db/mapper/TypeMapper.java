@@ -15,4 +15,5 @@ public interface TypeMapper {
 	TypeDtoGet typeToTypeGet(Type type);
 	
 	TypeDtoGetDetails typesToTypeGetDetails(Type type);
+	
 }

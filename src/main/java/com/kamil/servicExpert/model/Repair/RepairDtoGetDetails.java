@@ -35,6 +35,7 @@ public class RepairDtoGetDetails {
 	@JsonProperty("device")
 	private DeviceDtoGet device;
 	
-	@JsonProperty("usedElements")
+	@JsonProperty("used_elements")
 	private List<UsedElementDtoSlim> usedElements;
+	
 }

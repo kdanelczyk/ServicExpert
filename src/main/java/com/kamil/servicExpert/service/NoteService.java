@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Note;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,19 +16,19 @@ public interface NoteService {
 	
 	public boolean existsById(Long id);
 	
-	public Optional<Note> findById(Long id);
+	public Optional<NoteDtoGet> findById(Long id);
 
-	public List<Note> findByUserId(long userId);
+	public List<NoteDtoGet> findByUserId(long userId);
 
-	public List<Note> findAll();
+	public List<NoteDtoGet> findAll();
 	
-	public Note save(Note note);
+	public NoteDtoGet save(NoteDtoPost noteDtoPost);
 	
-	public Note createNoteForUser(Long userId, Note note);
+	public NoteDtoGet createNoteForUser(Long userId, NoteDtoPost noteDtoPost);
 	
-	public Note createNote(Note note);
+	public NoteDtoGet createNote(NoteDtoPost noteDtoPost);
 
-	public Note updateNote(Long id, Note note);
+	public NoteDtoGet updateNote(Long id, NoteDtoPost noteDtoPost);
 	
 	public void elementChecker();
 	
@@ -35,4 +37,5 @@ public interface NoteService {
 	public void deleteAll();
 	
 	public void deleteByUserId(long userId);
+	
 }

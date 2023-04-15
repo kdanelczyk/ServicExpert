@@ -33,7 +33,7 @@ public class Repair {
 	@Column(name = "note")
 	private String note;
 
-	@Column(name = "dateCreated")
+	@Column(name = "date_created")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
 

@@ -21,4 +21,5 @@ public class NoteDtoPost {
 	@JsonProperty("description")
 	@NotNull(message = "Note is required.")
 	private String description;
+	
 }

@@ -14,4 +14,5 @@ public interface ElementRepository extends JpaRepository<Element, Long> {
 
 	@Transactional
 	void deleteByTypeId(long typeId);
+	
 }

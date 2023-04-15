@@ -2,6 +2,7 @@ package com.kamil.servicExpert.security.service;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.payload.request.UserLoginRequest;
 import com.kamil.servicExpert.payload.request.UserSignupRequest;
 
 import jakarta.transaction.Transactional;
@@ -10,6 +11,8 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface AuthService {
 	
-	public void registerUser(UserSignupRequest signUpRequest);
+	public UserDetailsImpl authenticateUser(UserLoginRequest userLoginRequest);
+	
+	public void registerUser(UserSignupRequest userSignUpRequest);
 
 }

@@ -20,7 +20,7 @@ public class ElementDtoGet {
 	@JsonProperty("quantity")
 	private int quantity;
 	
-	@JsonProperty("name_of_element")
+	@JsonProperty("element_name")
 	private String nameOfElement;
 
 }

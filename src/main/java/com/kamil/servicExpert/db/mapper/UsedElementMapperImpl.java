@@ -14,7 +14,8 @@ public class UsedElementMapperImpl implements UsedElementMapper{
 		if(usedElement == null) {
 			return null;
 		}
-		return 	UsedElement.builder()
+		return 	UsedElement
+				.builder()
 				.priceOfElement(usedElement.getPriceOfElement())
 				.nameOfElement(usedElement.getNameOfElement())
 				.build();
@@ -25,8 +26,10 @@ public class UsedElementMapperImpl implements UsedElementMapper{
 		if(usedElement == null) {
 			return null;
 		}		
-		return 	UsedElementDtoSlim.builder()
+		return 	UsedElementDtoSlim
+				.builder()
 				.nameOfElement(usedElement.getNameOfElement())
 				.build();
 	}
+	
 }

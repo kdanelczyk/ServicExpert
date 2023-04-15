@@ -24,4 +24,5 @@ public class NoteDtoGet {
 	
 	@JsonProperty("date_created")
 	private Date dateCreated;
+	
 }

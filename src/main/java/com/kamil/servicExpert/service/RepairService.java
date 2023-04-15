@@ -1,12 +1,13 @@
 package com.kamil.servicExpert.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Repair;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 
 import jakarta.transaction.Transactional;
 
@@ -16,23 +17,21 @@ public interface RepairService {
 	
 	public boolean existsById(Long id);
 	
-	public Optional<Repair> findById(Long id);
+	public Optional<RepairDtoGetDetails> findById(Long id);
     
-	public List<Repair> findByDeviceId(Long deviceId);
+	public List<RepairDtoGet> findByDeviceId(Long deviceId);
 	
-	public List<Repair> findByUserId(Long userId);
+	public List<RepairDtoGet> findByUserId(Long userId);
 
-	public List<Repair> findByDateCreated(Date dateCreated);
+	public List<RepairDtoGet> findAll();
 	
-	public List<Repair> findAll();
-	
-	public Repair save(Repair repair);
+	public RepairDtoGetDetails save(RepairDtoPost repair);
 		
-	public Repair createRepair(Long deviceId, Long userId, Repair repair);
+	public RepairDtoGetDetails createRepair(Long deviceId, Long userId, RepairDtoPost repairDtoPost);
 	
-	public Repair updateRepair(Long id, Repair repair);
+	public RepairDtoGetDetails updateRepair(Long id, RepairDtoPost repairDtoPost);
 	
-	public Repair addElementToRepair(Long repairId, Long elementId);
+	public RepairDtoGetDetails addElementToRepair(Long repairId, Long elementId);
 	
 	public void deleteElementFromRepair(Long repairId, Long elementId);
 	
@@ -43,4 +42,5 @@ public interface RepairService {
 	public void deleteByDeviceId(long deviceId);
 	
 	public void deleteByUserId(long userId);
+	
 }

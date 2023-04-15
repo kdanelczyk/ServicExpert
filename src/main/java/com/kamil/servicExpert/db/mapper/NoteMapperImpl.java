@@ -15,7 +15,8 @@ public class NoteMapperImpl implements NoteMapper{
 		if(noteDtoPost == null) {
 			return null;
 		}		
-		return 	Note.builder()
+		return 	Note
+				.builder()
 				.description(noteDtoPost.getDescription())
 				.dateCreated(new Date())
 				.build();
@@ -26,7 +27,8 @@ public class NoteMapperImpl implements NoteMapper{
 		if(note == null) {
 			return null;
 		}		
-		return 	NoteDtoGet.builder()
+		return 	NoteDtoGet
+				.builder()
 				.description(note.getDescription())
 				.dateCreated(note.getDateCreated())
 				.build();

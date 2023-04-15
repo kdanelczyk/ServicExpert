@@ -40,7 +40,7 @@ public class Note {
 	@Column(name = "description")
 	private String description;
 	
-	@Column(name = "dateCreated")
+	@Column(name = "date_created")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
 	
@@ -48,4 +48,5 @@ public class Note {
 	@JoinColumn(name = "user_id", nullable = true)
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private User user;
+	
 }

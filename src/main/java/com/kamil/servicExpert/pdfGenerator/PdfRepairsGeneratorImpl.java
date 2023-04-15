@@ -47,10 +47,10 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 		cellForTotals.setBackgroundColor(CMYKColor.DARK_GRAY);
 		cellForTotals.setPadding(10);
 		
-		cellForTotals.setPhrase(new Phrase("price_of_repairs", font));
+		cellForTotals.setPhrase(new Phrase("repairs price", font));
 		tableForTotals.addCell(cellForTotals);
 		
-		cellForTotals.setPhrase(new Phrase("cost_of_elements", font));
+		cellForTotals.setPhrase(new Phrase("elements cost", font));
 		tableForTotals.addCell(cellForTotals);
 		
 		cellForTotals.setPhrase(new Phrase("profit", font));
@@ -89,22 +89,22 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 			cellForRepairs.setPhrase(new Phrase("Id", font));
 			tableForRepairs.addCell(cellForRepairs);
 
-			cellForRepairs.setPhrase(new Phrase("date_created", font));
+			cellForRepairs.setPhrase(new Phrase("date created", font));
 			tableForRepairs.addCell(cellForRepairs);
 
-			cellForRepairs.setPhrase(new Phrase("type_of_device", font));
+			cellForRepairs.setPhrase(new Phrase("device type", font));
 			tableForRepairs.addCell(cellForRepairs);
 
-			cellForRepairs.setPhrase(new Phrase("total_cost", font));
+			cellForRepairs.setPhrase(new Phrase("total cost", font));
 			tableForRepairs.addCell(cellForRepairs);
 
 			cellForRepairs.setPhrase(new Phrase("user", font));
 			tableForRepairs.addCell(cellForRepairs);
 
-			cellForElements.setPhrase(new Phrase("name_of_element", font));
+			cellForElements.setPhrase(new Phrase("element name", font));
 			tableForElements.addCell(cellForElements);
 
-			cellForElements.setPhrase(new Phrase("price_of_element", font));
+			cellForElements.setPhrase(new Phrase("element price", font));
 			tableForElements.addCell(cellForElements);
 
 			tableForRepairs.addCell(String.valueOf(repair.getId()));

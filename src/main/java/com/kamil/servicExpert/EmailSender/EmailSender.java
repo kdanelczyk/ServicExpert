@@ -14,4 +14,5 @@ import jakarta.mail.MessagingException;
 public interface EmailSender {
 
 	public void sendReportsEmail(List<Repair> repairList, List<Element> elementList) throws MessagingException, IOException;
+	
 }

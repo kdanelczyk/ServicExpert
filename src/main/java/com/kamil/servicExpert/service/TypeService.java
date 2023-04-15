@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kamil.servicExpert.db.model.Type;
+import com.kamil.servicExpert.model.Type.TypeDtoGet;
+import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
+import com.kamil.servicExpert.model.Type.TypeDtoPost;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,17 +17,18 @@ public interface TypeService {
 	
 	public boolean existsById(Long id);
 	
-	public Optional<Type> findById(Long id);
+	public Optional<TypeDtoGetDetails> findById(Long id);
 	
-	public List<Type> findAll();
+	public List<TypeDtoGet> findAll();
 	
-	public Type save(Type type);
+	public TypeDtoGetDetails save(TypeDtoPost typeDtoPost);
 	
-	public Type createType(Type type);
+	public TypeDtoGetDetails createType(TypeDtoPost typeDtoPost);
 	
-	public Type updateType(Long id, Type type);
+	public TypeDtoGetDetails updateType(Long id, TypeDtoPost typeDtoPost);
 	
 	public void deleteById(Long id);
 	
 	public void deleteAll();
+	
 }

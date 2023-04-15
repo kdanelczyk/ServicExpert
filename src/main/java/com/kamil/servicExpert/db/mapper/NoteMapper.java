@@ -12,4 +12,5 @@ public interface NoteMapper {
 	Note noteInputToNote(NoteDtoPost noteDtoPost);
 	
 	NoteDtoGet noteToNoteGet(Note note);
+	
 }

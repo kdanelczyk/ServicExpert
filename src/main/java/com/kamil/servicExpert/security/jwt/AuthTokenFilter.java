@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,40 +22,41 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 	
   @Autowired
   private JwtUtils jwtUtils;
-
+  
   @Autowired
   private UserDetailsServiceImpl userDetailsService;
 
-  private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+  private static final Logger logg = LoggerFactory.getLogger(AuthTokenFilter.class);
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
       throws ServletException, IOException {
     try {
-      String jwt = parseJwt(request);
+      String jwt = parseJwt(httpServletRequest);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         
-        UsernamePasswordAuthenticationToken authentication = 
+        UsernamePasswordAuthenticationToken authenticationToken = 
             new UsernamePasswordAuthenticationToken(userDetails,
                                                     null,
                                                     userDetails.getAuthorities());
         
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       }
-    } catch (Exception e) {
-      logger.error("Cannot set user authentication: {}", e);
+    } catch (Exception error) {
+      logg.error("Catching Error: Cannot set user authentication: {}", error);
     }
 
-    filterChain.doFilter(request, response);
+    filterChain.doFilter(httpServletRequest, httpServletResponse);
   }
 
-  private String parseJwt(HttpServletRequest request) {
-    String jwt = jwtUtils.getJwtFromCookies(request);
+  private String parseJwt(HttpServletRequest httpServletRequest) {
+    String jwt = jwtUtils.getJwtFromCookies(httpServletRequest);
     return jwt;
   }
+  
 }

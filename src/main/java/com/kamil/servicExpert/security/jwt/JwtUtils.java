@@ -19,7 +19,7 @@ import io.jsonwebtoken.*;
 @Component
 public class JwtUtils {
 	
-	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+	private static final Logger logg = LoggerFactory.getLogger(JwtUtils.class);
 
 	@Value("${servicExpert.app.jwtSecret}")
 	private String jwtSecret;
@@ -30,8 +30,8 @@ public class JwtUtils {
 	@Value("${servicExpert.app.jwtCookieName}")
 	private String jwtCookie;
 
-	public String getJwtFromCookies(HttpServletRequest request) {
-		Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+	public String getJwtFromCookies(HttpServletRequest httpServletRequest) {
+		Cookie cookie = WebUtils.getCookie(httpServletRequest, jwtCookie);
 		if (cookie != null) {
 			return cookie.getValue();
 		} else {
@@ -39,16 +39,14 @@ public class JwtUtils {
 		}
 	}
 
-	public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-		String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-		ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
+	public ResponseCookie generateJwtCookie(UserDetailsImpl userDetails) {
+		String jwt = generateTokenFromUsername(userDetails.getUsername());
+		return ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
 				.build();
-		return cookie;
 	}
 
 	public ResponseCookie getCleanJwtCookie() {
-		ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
-		return cookie;
+		return ResponseCookie.from(jwtCookie, null).path("/api").build();
 	}
 
 	public String getUserNameFromJwtToken(String token) {
@@ -59,16 +57,16 @@ public class JwtUtils {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
-		} catch (SignatureException e) {
-			logger.error("Invalid JWT signature: {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			logger.error("Invalid JWT token: {}", e.getMessage());
-		} catch (ExpiredJwtException e) {
-			logger.error("JWT token is expired: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			logger.error("JWT token is unsupported: {}", e.getMessage());
-		} catch (IllegalArgumentException e) {
-			logger.error("JWT claims string is empty: {}", e.getMessage());
+		} catch (SignatureException error) {
+			logg.error("Catching error: Invalid JWT signature: {}", error.getMessage());
+		} catch (MalformedJwtException error) {
+			logg.error("Catching error: Invalid JWT token: {}", error.getMessage());
+		} catch (ExpiredJwtException error) {
+			logg.error("Catching error: JWT token is expired: {}", error.getMessage());
+		} catch (UnsupportedJwtException error) {
+			logg.error("Catching error: JWT token is unsupported: {}", error.getMessage());
+		} catch (IllegalArgumentException error) {
+			logg.error("Catching error: JWT claims string is empty: {}", error.getMessage());
 		}
 
 		return false;
@@ -79,4 +77,5 @@ public class JwtUtils {
 				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 	}
+	
 }

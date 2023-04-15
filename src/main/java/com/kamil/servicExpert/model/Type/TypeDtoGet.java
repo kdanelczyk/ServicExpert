@@ -19,4 +19,5 @@ public class TypeDtoGet {
 
 	@JsonProperty("type_name")
 	private String nameOfType;
+	
 }

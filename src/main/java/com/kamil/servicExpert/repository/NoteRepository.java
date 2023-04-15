@@ -14,4 +14,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
 	@Transactional
 	void deleteByUserId(long userId);
+	
 }

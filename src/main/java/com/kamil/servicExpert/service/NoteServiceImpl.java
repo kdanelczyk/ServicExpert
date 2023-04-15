@@ -3,12 +3,18 @@ package com.kamil.servicExpert.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kamil.servicExpert.db.mapper.NoteMapper;
 import com.kamil.servicExpert.db.model.Note;
 import com.kamil.servicExpert.exception.ResourceNotFoundException;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
+import com.kamil.servicExpert.repository.ElementRepository;
 import com.kamil.servicExpert.repository.NoteRepository;
+import com.kamil.servicExpert.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -17,8 +23,9 @@ import lombok.AllArgsConstructor;
 public class NoteServiceImpl implements NoteService{
 
 	private NoteRepository noteRepository;
-	private UserService userService;
-	private ElementService elementService;
+	private UserRepository userRepository;
+	private ElementRepository elementRepository;
+	private NoteMapper noteMapper;
 	
 	@Override
 	public boolean existsById(Long id) {
@@ -29,56 +36,65 @@ public class NoteServiceImpl implements NoteService{
 	}
 
 	@Override
-	public Optional<Note> findById(Long id) {
-		return noteRepository.findById(id);
+	public Optional<NoteDtoGet> findById(Long id) {
+		return Optional.of(noteMapper.noteToNoteGet(noteRepository.findById(id).get()));
 	}
 
 	@Override
-	public List<Note> findByUserId(long userId) {
-		userService.existsById(userId);
-		return noteRepository.findByUserId(userId);
+	public List<NoteDtoGet> findByUserId(long userId) {
+		userRepository.existsById(userId);
+		return noteRepository.findByUserId(userId)
+				.stream()
+				.map(noteMapper::noteToNoteGet)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Note> findAll() {
-		return noteRepository.findAll();
+	public List<NoteDtoGet> findAll() {
+		return noteRepository.findAll()
+				.stream()
+				.map(noteMapper::noteToNoteGet)
+				.collect(Collectors.toList());
 	}
 	
 	@Override
-	public Note save(Note note) {
-		return noteRepository.save(note);
+	public NoteDtoGet save(NoteDtoPost noteDtoPost) {
+		return noteMapper.noteToNoteGet(noteRepository.save(noteMapper.noteInputToNote(noteDtoPost)));
 	}
 
 	@Override
-	public Note createNoteForUser(Long userId, Note note) {
-		return save(Note.builder()
+	public NoteDtoGet createNoteForUser(Long userId, NoteDtoPost noteDtoPost) {
+		return noteMapper.noteToNoteGet(noteRepository.save(Note
+				.builder()
 				.dateCreated(new Date())
-				.description(note.getDescription())
-				.user(userService.findById(userId).get())
-				.build());
+				.description(noteDtoPost.getDescription())
+				.user(userRepository.findById(userId).get())
+				.build()));
 	}
 
 	@Override
-	public Note createNote(Note note) {
-		return save(Note.builder()
+	public NoteDtoGet createNote(NoteDtoPost noteDtoPost) {
+		return noteMapper.noteToNoteGet(noteRepository.save(Note
+				.builder()
 				.dateCreated(new Date())
-				.description(note.getDescription())
-				.build());
+				.description(noteDtoPost.getDescription())
+				.build()));
 	}
 
 	@Override
-	public Note updateNote(Long id, Note note) {
-		Note noteToUpdate = findById(id).get();
-		noteToUpdate.setDescription(note.getDescription());
-		save(noteToUpdate);
-		return noteToUpdate;
+	public NoteDtoGet updateNote(Long id, NoteDtoPost noteDtoPost) {
+		Note noteToUpdate = noteRepository.findById(id).get();
+		noteToUpdate.setDescription(noteDtoPost.getDescription());
+		noteRepository.save(noteToUpdate);
+		return noteMapper.noteToNoteGet(noteToUpdate);
 	}
 	
 	@Override
 	public void elementChecker() {
-		elementService.findAll().stream()
+		elementRepository.findAll().stream()
 			.filter(element -> element.getCriticalQuantity() >= element.getQuantity())
-			.forEach(element -> save(Note.builder()
+			.forEach(element -> noteRepository.save(Note
+					.builder()
 					.dateCreated(new Date())
 					.description("critical Quantity of " + element.getNameOfElement() + " to " + element.getType().getNameOfType())
 					.build()));
@@ -97,7 +113,8 @@ public class NoteServiceImpl implements NoteService{
 	
 	@Override
 	public void deleteByUserId(long userId) {
-		userService.existsById(userId);
+		userRepository.existsById(userId);
 		noteRepository.deleteByUserId(userId);
 	}
+	
 }
