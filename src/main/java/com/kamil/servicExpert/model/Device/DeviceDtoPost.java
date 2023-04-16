@@ -26,6 +26,6 @@ public class DeviceDtoPost {
 
 	@JsonProperty("customer_name")
 	@Size(min = 3, max = 20, message = "Name should have min 3 and max 20 characters.")
-	private String nameOfCustomer;
+	private String customerName;
 	
 }

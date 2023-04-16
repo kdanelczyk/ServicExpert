@@ -63,8 +63,8 @@ class ElementServiceTest {
 		when(elementService.findById(id)).thenReturn(Optional.of(element));
 		// Then
         assertEquals(elementService.findById(id), Optional.of(element));
-        assertEquals(elementService.findById(id).get().getNameOfElement(), "nameOfElement");
-        assertEquals(elementService.findById(id).get().getPriceOfElement(), 20);
+        assertEquals(elementService.findById(id).get().getElementName(), "nameOfElement");
+        assertEquals(elementService.findById(id).get().getElementPrice(), 20);
         verify(elementService, times(3)).findById(id);
 	}
 	

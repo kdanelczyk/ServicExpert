@@ -57,7 +57,7 @@ public class ElementServiceImpl implements ElementService{
 
 	@Override
 	public ElementDtoGetDetails save(ElementDtoPost elementDtoPost) {
-		return elementMapper.elementToElementGetDetails(elementRepository.save(elementMapper.elementInputToElement(elementDtoPost)));
+		return elementMapper.elementToElementGetDetails(elementRepository.save(elementMapper.elementPostToElement(elementDtoPost)));
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class ElementServiceImpl implements ElementService{
 		return elementMapper.elementToElementGetDetails(elementRepository.save(Element.builder()
 				.quantity(elementDtoPost.getQuantity())
 				.criticalQuantity(elementDtoPost.getCriticalQuantity())
-				.nameOfElement(elementDtoPost.getNameOfElement())
-				.priceOfElement(elementDtoPost.getPriceOfElement())
+				.elementName(elementDtoPost.getElementName())
+				.elementPrice(elementDtoPost.getElementPrice())
 				.type(typeRepository.findById(typeId).get()).build()));
 	}
 
@@ -74,8 +74,8 @@ public class ElementServiceImpl implements ElementService{
 	public ElementDtoGetDetails updateElement(Long id, ElementDtoPost elementDtoPost) {
 		Element elementToUpdate = elementRepository.findById(id).get();
 		elementToUpdate.setQuantity(elementDtoPost.getQuantity());
-		elementToUpdate.setNameOfElement(elementDtoPost.getNameOfElement());
-		elementToUpdate.setPriceOfElement(elementDtoPost.getPriceOfElement());
+		elementToUpdate.setElementName(elementDtoPost.getElementName());
+		elementToUpdate.setElementPrice(elementDtoPost.getElementPrice());
 		elementRepository.save(elementToUpdate);
 		return elementMapper.elementToElementGetDetails(elementToUpdate);
 	}

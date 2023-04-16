@@ -63,7 +63,7 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 		
 		BigDecimal costOfElements = repairList.stream()
 				.map(repair -> repair.getUsedElements().stream()
-						.map(usedElement -> usedElement.getPriceOfElement())
+						.map(usedElement -> usedElement.getElementPrice())
 						.reduce(BigDecimal.ZERO, BigDecimal::add))
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		
@@ -109,13 +109,13 @@ public class PdfRepairsGeneratorImpl implements PdfRepairsGenerator{
 
 			tableForRepairs.addCell(String.valueOf(repair.getId()));
 			tableForRepairs.addCell(String.valueOf(repair.getDateCreated()));
-			tableForRepairs.addCell(String.valueOf(repair.getDevice().getType().getNameOfType()));
+			tableForRepairs.addCell(String.valueOf(repair.getDevice().getType().getTypeName()));
 			tableForRepairs.addCell(String.valueOf(repair.getCost()));
 			tableForRepairs.addCell(String.valueOf(repair.getUser().getName()));
 			
 			repair.getUsedElements().stream().forEach(element -> {
-				tableForElements.addCell(String.valueOf(element.getNameOfElement()));
-				tableForElements.addCell(String.valueOf(element.getPriceOfElement()));
+				tableForElements.addCell(String.valueOf(element.getElementName()));
+				tableForElements.addCell(String.valueOf(element.getElementPrice()));
 			});
 			report.add(tableForRepairs);
 			report.add(tableForElements);

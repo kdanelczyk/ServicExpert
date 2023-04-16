@@ -18,7 +18,7 @@ import lombok.ToString;
 public class DeviceDtoGet {
 
 	@JsonProperty("customer_name")
-	private String nameOfCustomer;
+	private String customerName;
 	
 	@JsonProperty("repaired")
 	private boolean repaired;

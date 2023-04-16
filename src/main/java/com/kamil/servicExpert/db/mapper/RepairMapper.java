@@ -10,7 +10,7 @@ import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 @Mapper(componentModel = "spring")
 public interface RepairMapper {
 	
-	Repair repairInputToRepair(RepairDtoPost repairDtoPost);
+	Repair repairPostToRepair(RepairDtoPost repairDtoPost);
 	
 	RepairDtoGet repairToRepairGet(Repair device);
 	

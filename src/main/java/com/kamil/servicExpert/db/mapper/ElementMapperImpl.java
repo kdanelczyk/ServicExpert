@@ -16,7 +16,7 @@ import com.kamil.servicExpert.model.Element.ElementDtoGetSlim;
 public class ElementMapperImpl implements ElementMapper{
 
 	@Override
-	public Element elementInputToElement(ElementDtoPost elementDtoPost) {
+	public Element elementPostToElement(ElementDtoPost elementDtoPost) {
 		if(elementDtoPost == null) {
 			return null;
 		}		
@@ -24,8 +24,8 @@ public class ElementMapperImpl implements ElementMapper{
 				.builder()
 				.quantity(elementDtoPost.getQuantity())
 				.criticalQuantity(elementDtoPost.getCriticalQuantity())
-				.nameOfElement(elementDtoPost.getNameOfElement())
-				.priceOfElement(elementDtoPost.getPriceOfElement())
+				.elementName(elementDtoPost.getElementName())
+				.elementPrice(elementDtoPost.getElementPrice())
 				.build();
 	}
 	
@@ -36,7 +36,7 @@ public class ElementMapperImpl implements ElementMapper{
 		}		
 		return 	ElementDtoGetSlim
 				.builder()
-				.nameOfElement(element.getNameOfElement())
+				.elementName(element.getElementName())
 				.build();
 	}
 
@@ -48,7 +48,7 @@ public class ElementMapperImpl implements ElementMapper{
 		return 	ElementDtoGet
 				.builder()
 				.quantity(element.getQuantity())
-				.nameOfElement(element.getNameOfElement())
+				.elementName(element.getElementName())
 				.build();
 	}
 
@@ -61,8 +61,8 @@ public class ElementMapperImpl implements ElementMapper{
 				.builder()
 				.quantity(element.getQuantity())
 				.criticalQuantity(element.getCriticalQuantity())
-				.nameOfElement(element.getNameOfElement())
-				.priceOfElement(element.getPriceOfElement())
+				.elementName(element.getElementName())
+				.elementPrice(element.getElementPrice())
 				.build();
 	}
 

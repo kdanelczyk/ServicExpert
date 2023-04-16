@@ -18,6 +18,6 @@ import lombok.ToString;
 public class ElementDtoGetSlim {
 	
 	@JsonProperty("element_name")
-	private String nameOfElement;
+	private String elementName;
 	
 }

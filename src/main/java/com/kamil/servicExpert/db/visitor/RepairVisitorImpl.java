@@ -11,7 +11,7 @@ public class RepairVisitorImpl implements RepairVisitor{
 
 	@Override
     public BigDecimal visit(UsedElement usedElement) {
-        return usedElement.getPriceOfElement();
+        return usedElement.getElementPrice();
     }
 	
 }

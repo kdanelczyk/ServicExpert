@@ -58,7 +58,7 @@ class TypeServiceTest {
 		when(typeService.findById(id)).thenReturn(Optional.of(type));
 		// Then
         assertEquals(typeService.findById(id), Optional.of(type));
-        assertEquals(typeService.findById(id).get().getNameOfType(), "name");
+        assertEquals(typeService.findById(id).get().getTypeName(), "name");
         verify(typeService, times(2)).findById(id);
 	}
 	

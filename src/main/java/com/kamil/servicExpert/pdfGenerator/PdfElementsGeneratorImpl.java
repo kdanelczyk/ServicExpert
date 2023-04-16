@@ -66,10 +66,10 @@ public class PdfElementsGeneratorImpl implements PdfElementsGenerator{
 		tableForElements.addCell(cellForElements);
 		
 		elementList.stream().forEach(element -> {			
-			tableForElements.addCell(String.valueOf(element.getNameOfElement()));
-			tableForElements.addCell(String.valueOf(element.getType().getNameOfType()));
-			tableForElements.addCell(String.valueOf(element.getPriceOfElement()));
-			tableForElements.addCell(String.valueOf(element.getPriceOfElement().multiply(BigDecimal.valueOf(element.getQuantity()))));
+			tableForElements.addCell(String.valueOf(element.getElementName()));
+			tableForElements.addCell(String.valueOf(element.getType().getTypeName()));
+			tableForElements.addCell(String.valueOf(element.getElementPrice()));
+			tableForElements.addCell(String.valueOf(element.getElementPrice().multiply(BigDecimal.valueOf(element.getQuantity()))));
 			tableForElements.addCell(String.valueOf(element.getQuantity()));
 			tableForElements.addCell(String.valueOf(element.getCriticalQuantity()>element.getQuantity()));
 			});

@@ -18,13 +18,13 @@ public class TypeMapperImpl implements TypeMapper{
 	ElementMapper elementMapper;
 
 	@Override
-	public Type typeInputToType(TypeDtoPost typeDtoPost) {
+	public Type typePostToType(TypeDtoPost typeDtoPost) {
 		if(typeDtoPost == null) {
 			return null;
 		}		
 		return 	Type
 				.builder()
-				.nameOfType(typeDtoPost.getNameOfType())
+				.typeName(typeDtoPost.getTypeName())
 				.build();
 	}
 
@@ -35,7 +35,7 @@ public class TypeMapperImpl implements TypeMapper{
 		}		
 		return 	TypeDtoGet
 				.builder()
-				.nameOfType(type.getNameOfType())
+				.typeName(type.getTypeName())
 				.build();
 	}
 
@@ -46,7 +46,7 @@ public class TypeMapperImpl implements TypeMapper{
 		}		
 		return 	TypeDtoGetDetails
 				.builder()
-				.nameOfType(type.getNameOfType())
+				.typeName(type.getTypeName())
 				.elements(type.getElements()
 						.stream()
 						.map(elementMapper::elementToElementSlim)

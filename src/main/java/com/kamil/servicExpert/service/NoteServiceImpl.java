@@ -59,7 +59,7 @@ public class NoteServiceImpl implements NoteService{
 	
 	@Override
 	public NoteDtoGet save(NoteDtoPost noteDtoPost) {
-		return noteMapper.noteToNoteGet(noteRepository.save(noteMapper.noteInputToNote(noteDtoPost)));
+		return noteMapper.noteToNoteGet(noteRepository.save(noteMapper.notePostToNote(noteDtoPost)));
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class NoteServiceImpl implements NoteService{
 			.forEach(element -> noteRepository.save(Note
 					.builder()
 					.dateCreated(new Date())
-					.description("critical Quantity of " + element.getNameOfElement() + " to " + element.getType().getNameOfType())
+					.description("critical Quantity of " + element.getElementName() + " to " + element.getType().getTypeName())
 					.build()));
 	}
 

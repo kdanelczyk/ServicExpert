@@ -84,7 +84,7 @@ public class RepairServiceImpl implements RepairService{
 
 	@Override
 	public RepairDtoGetDetails save(RepairDtoPost repairDtoPost) {
-		return repairMapper.repairToRepairGetDetails(repairRepository.save(repairMapper.repairInputToRepair(repairDtoPost)));
+		return repairMapper.repairToRepairGetDetails(repairRepository.save(repairMapper.repairPostToRepair(repairDtoPost)));
 	}
 
 	@Override
@@ -106,6 +106,7 @@ public class RepairServiceImpl implements RepairService{
 	public RepairDtoGetDetails updateRepair(Long id, RepairDtoPost repairDtoPost) {
 		Repair repairToUpdate = repairRepository.findById(id).get();
 		repairToUpdate.setCost(repairDtoPost.getCost());
+		repairToUpdate.setNote(repairDtoPost.getNote());
 		repairRepository.save(repairToUpdate);
 		return repairMapper.repairToRepairGetDetails(repairToUpdate);
 	}
@@ -120,12 +121,12 @@ public class RepairServiceImpl implements RepairService{
 		}
 		
 		element.setQuantity(element.getQuantity() - 1);
-		repair.setCost(repair.getCost().add(element.getPriceOfElement()));
+		repair.setCost(repair.getCost().add(element.getElementPrice()));
 		
 		UsedElement usedElement = usedElementRepository.save(UsedElement
 				.builder()
-				.nameOfElement(element.getNameOfElement())
-				.priceOfElement(element.getPriceOfElement())
+				.elementName(element.getElementName())
+				.elementPrice(element.getElementPrice())
 				.repair(repair)
 				.build());
 		
@@ -141,7 +142,7 @@ public class RepairServiceImpl implements RepairService{
 		Repair repair = repairRepository.findById(repairId).get();
 		UsedElement usedElement = repair.getUsedElements()
 				.stream()
-				.filter(t -> t.getId() == elementId)
+				.filter(t -> t.getElementName() == usedElementRepository.findById(elementId).get().getElementName())
 				.findFirst().orElse(null);
 		if (usedElement != null) {
 			repair.getUsedElements().remove(usedElement);

@@ -20,7 +20,7 @@ public class RepairMapperImpl implements RepairMapper{
 	UsedElementMapper usedElementMapper;
 
 	@Override
-	public Repair repairInputToRepair(RepairDtoPost repairDtoPost) {
+	public Repair repairPostToRepair(RepairDtoPost repairDtoPost) {
 		if(repairDtoPost == null) {
 			return null;
 		}		

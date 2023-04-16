@@ -16,8 +16,8 @@ public class UsedElementMapperImpl implements UsedElementMapper{
 		}
 		return 	UsedElement
 				.builder()
-				.priceOfElement(usedElement.getPriceOfElement())
-				.nameOfElement(usedElement.getNameOfElement())
+				.elementPrice(usedElement.getElementPrice())
+				.elementName(usedElement.getElementName())
 				.build();
 	}
 	
@@ -28,7 +28,7 @@ public class UsedElementMapperImpl implements UsedElementMapper{
 		}		
 		return 	UsedElementDtoSlim
 				.builder()
-				.nameOfElement(usedElement.getNameOfElement())
+				.elementName(usedElement.getElementName())
 				.build();
 	}
 	

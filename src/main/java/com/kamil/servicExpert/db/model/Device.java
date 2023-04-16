@@ -42,7 +42,7 @@ public class Device {
 	private long customerPhoneNumber;
 
 	@Column(name = "customer_name")
-	private String nameOfCustomer;
+	private String customerName;
 
 	@Column(name = "date_of_receipt")
 	@Temporal(TemporalType.TIMESTAMP)

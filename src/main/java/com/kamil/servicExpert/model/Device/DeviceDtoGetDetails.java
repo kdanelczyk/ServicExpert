@@ -23,7 +23,7 @@ public class DeviceDtoGetDetails {
 	private long customerPhoneNumber;
 
 	@JsonProperty("customer_name")
-	private String nameOfCustomer;
+	private String customerName;
 	
 	@JsonProperty("date_of_receipt")
 	private Date dateOfReceipt;

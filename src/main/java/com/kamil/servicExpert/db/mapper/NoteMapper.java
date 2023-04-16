@@ -9,7 +9,7 @@ import com.kamil.servicExpert.model.Note.NoteDtoPost;
 @Mapper(componentModel = "spring")
 public interface NoteMapper {
 	
-	Note noteInputToNote(NoteDtoPost noteDtoPost);
+	Note notePostToNote(NoteDtoPost noteDtoPost);
 	
 	NoteDtoGet noteToNoteGet(Note note);
 	

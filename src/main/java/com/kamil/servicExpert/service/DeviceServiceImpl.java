@@ -73,7 +73,7 @@ public class DeviceServiceImpl implements DeviceService{
 	public DeviceDtoGetDetails createDeviceForType(Long typeId, DeviceDtoPost deviceDtoPost) {
 		return deviceMapper.deviceToDeviceGetDetails(deviceRepository.save(Device.builder()
 				.customerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber())
-				.nameOfCustomer(deviceDtoPost.getNameOfCustomer())
+				.customerName(deviceDtoPost.getCustomerName())
 				.type(typeRepository.findById(typeId).get())
 				.dateOfReceipt(new Date())
 				.repaired(false).build()));
@@ -82,7 +82,7 @@ public class DeviceServiceImpl implements DeviceService{
 	@Override
 	public DeviceDtoGetDetails updateDevice(Long id, DeviceDtoPost deviceDtoPost) {
 		Device deviceToUpdate = deviceRepository.findById(id).get();
-		deviceToUpdate.setNameOfCustomer(deviceDtoPost.getNameOfCustomer());
+		deviceToUpdate.setCustomerName(deviceDtoPost.getCustomerName());
 		deviceToUpdate.setCustomerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber());
 		deviceRepository.save(deviceToUpdate);
 		return deviceMapper.deviceToDeviceGetDetails(deviceToUpdate);

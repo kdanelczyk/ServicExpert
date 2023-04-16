@@ -25,7 +25,7 @@ public class Type {
 	private Long id;
 	
 	@Column(name = "type_name")
-	private String nameOfType;
+	private String typeName;
 	
 	@OneToMany(mappedBy="type")
 	private List<Device> devices;

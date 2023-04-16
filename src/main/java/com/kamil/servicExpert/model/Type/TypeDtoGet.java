@@ -18,6 +18,6 @@ import lombok.ToString;
 public class TypeDtoGet {
 
 	@JsonProperty("type_name")
-	private String nameOfType;
+	private String typeName;
 	
 }

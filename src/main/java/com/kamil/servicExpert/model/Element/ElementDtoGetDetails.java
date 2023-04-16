@@ -26,9 +26,9 @@ public class ElementDtoGetDetails {
 	private int criticalQuantity;
 	
 	@JsonProperty("element_name")
-	private String nameOfElement;
+	private String elementName;
 	
 	@JsonProperty("element_price")
-	private BigDecimal priceOfElement;
+	private BigDecimal elementPrice;
 	
 }

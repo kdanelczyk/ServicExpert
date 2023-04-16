@@ -22,7 +22,7 @@ public class DeviceMapperImpl implements DeviceMapper{
 		return 	Device
 				.builder()
 				.customerPhoneNumber(deviceDtoPost.getCustomerPhoneNumber())
-				.nameOfCustomer(deviceDtoPost.getNameOfCustomer())
+				.customerName(deviceDtoPost.getCustomerName())
 				.dateOfReceipt(new Date())
 				.repaired(false)
 				.build();
@@ -35,7 +35,7 @@ public class DeviceMapperImpl implements DeviceMapper{
 		}		
 		return 	DeviceDtoGet
 				.builder()
-				.nameOfCustomer(device.getNameOfCustomer())
+				.customerName(device.getCustomerName())
 				.repaired(device.isRepaired())
 				.build();
 	}
@@ -48,7 +48,7 @@ public class DeviceMapperImpl implements DeviceMapper{
 		return 	DeviceDtoGetDetails
 				.builder()
 				.customerPhoneNumber(device.getCustomerPhoneNumber())
-				.nameOfCustomer(device.getNameOfCustomer())
+				.customerName(device.getCustomerName())
 				.dateOfReceipt(device.getDateOfReceipt())
 				.repaired(false)
 				.build();

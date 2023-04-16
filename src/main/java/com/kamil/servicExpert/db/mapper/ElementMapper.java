@@ -11,7 +11,7 @@ import com.kamil.servicExpert.model.Element.ElementDtoGetSlim;
 @Mapper(componentModel = "spring")
 public interface ElementMapper {
 	
-	Element elementInputToElement(ElementDtoPost elementDtoPost);
+	Element elementPostToElement(ElementDtoPost elementDtoPost);
 	
 	ElementDtoGetSlim elementToElementSlim(Element element);
 	

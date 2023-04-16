@@ -21,6 +21,6 @@ public class ElementDtoGet {
 	private int quantity;
 	
 	@JsonProperty("element_name")
-	private String nameOfElement;
+	private String elementName;
 
 }

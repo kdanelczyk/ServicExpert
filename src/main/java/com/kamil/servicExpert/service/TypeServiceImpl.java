@@ -48,14 +48,14 @@ public class TypeServiceImpl implements TypeService{
 
 	@Override
 	public TypeDtoGetDetails save(TypeDtoPost typeDtoPost) {
-		return typeMapper.typesToTypeGetDetails(typeRepository.save(typeMapper.typeInputToType(typeDtoPost)));
+		return typeMapper.typesToTypeGetDetails(typeRepository.save(typeMapper.typePostToType(typeDtoPost)));
 		
 	}
 
 	@Override
 	public TypeDtoGetDetails createType(TypeDtoPost typeDtoPost) {
 		return typeMapper.typesToTypeGetDetails(typeRepository.save(Type.builder()
-				.nameOfType(typeDtoPost.getNameOfType())
+				.typeName(typeDtoPost.getTypeName())
 				.devices(new ArrayList<>())
 				.elements(new ArrayList<>())
 				.build()));
@@ -64,7 +64,7 @@ public class TypeServiceImpl implements TypeService{
 	@Override
 	public TypeDtoGetDetails updateType(Long id, TypeDtoPost typeDtoPost) {
 		Type typeToUpdate = typeRepository.findById(id).get();
-		typeToUpdate.setNameOfType(typeDtoPost.getNameOfType());
+		typeToUpdate.setTypeName(typeDtoPost.getTypeName());
 		typeRepository.save(typeToUpdate);
 		return typeMapper.typesToTypeGetDetails(typeToUpdate);
 	}

@@ -10,7 +10,7 @@ import com.kamil.servicExpert.model.Type.TypeDtoPost;
 @Mapper(componentModel = "spring")
 public interface TypeMapper {
 
-	Type typeInputToType(TypeDtoPost typeDtoPost);
+	Type typePostToType(TypeDtoPost typeDtoPost);
 	
 	TypeDtoGet typeToTypeGet(Type type);
 	

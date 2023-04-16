@@ -61,7 +61,7 @@ class DeviceServiceTest {
 		// Then
         assertEquals(deviceService.findById(id), Optional.of(device));
         assertEquals(deviceService.findById(id).get().getCustomerPhoneNumber(), 404040404);
-        assertEquals(deviceService.findById(id).get().getNameOfCustomer(), "Frank");
+        assertEquals(deviceService.findById(id).get().getCustomerName(), "Frank");
         verify(deviceService, times(3)).findById(id);
 	}
 	
@@ -90,7 +90,7 @@ class DeviceServiceTest {
 		when(deviceService.findByRepaired(false)).thenReturn(devices);
 		// Then
         assertEquals(1, deviceService.findByRepaired(false).size());
-        assertEquals("Frank", deviceService.findByRepaired(false).get(0).getNameOfCustomer());
+        assertEquals("Frank", deviceService.findByRepaired(false).get(0).getCustomerName());
         verify(deviceService, times(2)).findByRepaired(false);
 	}
 
@@ -108,7 +108,7 @@ class DeviceServiceTest {
 		when(deviceService.findByRepaired(true)).thenReturn(devices);
 		// Then
         assertEquals(1, deviceService.findByRepaired(true).size());
-        assertEquals("Frank", deviceService.findByRepaired(true).get(0).getNameOfCustomer());
+        assertEquals("Frank", deviceService.findByRepaired(true).get(0).getCustomerName());
         verify(deviceService, times(2)).findByRepaired(true);
 	}
 	@Test
@@ -131,7 +131,7 @@ class DeviceServiceTest {
 		when(deviceService.findByTypeId(id)).thenReturn(devices);
 		// Then
         assertEquals(1, deviceService.findByTypeId(id).size());
-        assertEquals("Frank", deviceService.findByTypeId(id).get(0).getNameOfCustomer());
+        assertEquals("Frank", deviceService.findByTypeId(id).get(0).getCustomerName());
         assertEquals("name", deviceService.findByTypeId(id).get(0).getType().getNameOfType());
         verify(deviceService, times(3)).findByTypeId(id);
 	}

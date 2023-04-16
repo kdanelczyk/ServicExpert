@@ -11,7 +11,7 @@ import com.kamil.servicExpert.model.Note.NoteDtoPost;
 public class NoteMapperImpl implements NoteMapper{
 
 	@Override
-	public Note noteInputToNote(NoteDtoPost noteDtoPost) {
+	public Note notePostToNote(NoteDtoPost noteDtoPost) {
 		if(noteDtoPost == null) {
 			return null;
 		}		

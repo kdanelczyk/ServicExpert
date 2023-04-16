@@ -21,7 +21,7 @@ import lombok.ToString;
 public class TypeDtoGetDetails {
 	
 	@JsonProperty("type_name")
-	private String nameOfType;
+	private String typeName;
 	
 	@JsonProperty("elements")
 	private List<ElementDtoGetSlim> elements;
