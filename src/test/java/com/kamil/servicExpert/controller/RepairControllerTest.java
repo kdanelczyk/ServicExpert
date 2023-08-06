@@ -1,206 +1,244 @@
 package com.kamil.servicExpert.controller;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 
-import com.kamil.servicExpert.db.mapper.RepairMapper;
-import com.kamil.servicExpert.db.model.Repair;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 import com.kamil.servicExpert.service.RepairService;
 
-@WebMvcTest(RepairController.class)
-@ExtendWith(MockitoExtension.class)
-class RepairControllerTest {
+public class RepairControllerTest {
 
-	@MockBean
-	private RepairService repairService;
-	
-	@MockBean
-	private RepairMapper repairMapper;
-
-	@Autowired
-	private MockMvc mockMvc;
-	
-    @Autowired
-    private WebApplicationContext context;
+    private RepairService repairService;
+    private RepairController repairController;
 
     @BeforeEach
-    public void setup() {
-        mockMvc =  MockMvcBuilders.webAppContextSetup(this.context).build();
+    public void setUp() {
+        repairService = mock(RepairService.class);
+        repairController = new RepairController(repairService);
     }
-    
-	@Test
-	void testGetAllRepairs() throws Exception {
-		// given
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// when
-		when(repairService.findAll()).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/repairs"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(repairs.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testFindAllRepairsNotFound() throws Exception {
-		// given
-		List<Repair> repairs = List.of();
-		// when
-		when(repairService.findAll()).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/repairs"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
 
-	@Test
-	void testGetRepairById() {
+    @Test
+    public void testGetAllRepairs_WithRepairs_ReturnsListOfRepairs() {
+        // given
+        List<RepairDtoGet> repairs = List.of(
+            new RepairDtoGet(new Date(), new BigDecimal("100.00")),
+            new RepairDtoGet(new Date(), new BigDecimal("100.00"))
+        );
+        // when
+        when(repairService.findAll()).thenReturn(repairs);
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairs();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().getContent().stream().toList().get(1).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("delete-repairs"));
+    }
 
-	}
+    @Test
+    public void testGetAllRepairs_WithNoRepairs_ReturnsNoContent() {
+        // given
+        // when
+        when(repairService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairs();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	@Test
-	void testGetAllRepairsByDeviceId() throws Exception {
-		// given
-		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// when
-		when(repairService.findByDeviceId(id)).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/devices/{id}/repairs", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(repairs.size()))
-				.andDo(print());
-	}
+    @Test
+    public void testGetRepairById_WithExistingRepairId_ReturnsRepairDetails() {
+        // given
+        long repairId = 1L;
+        RepairDtoGetDetails repairDetails = new RepairDtoGetDetails(
+            new Date(),
+			new BigDecimal("100.00"), 
+			"Repair 1", 
+			null,
+			new ArrayList<>()
+        );
+        // when
+        when(repairService.findById(repairId)).thenReturn(Optional.of(repairDetails));
+        // then
+        ResponseEntity<EntityModel<RepairDtoGetDetails>> response = repairController.getRepairById(repairId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Repair 1", response.getBody().getContent().getNote());
+        assertTrue(response.getBody().getContent().getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().getContent().getUsedElements().isEmpty());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("all-repairs"));
+        assertNotNull(response.getBody().getLink("delete-repair"));
+    }
 
-	@Test
-	void testGetAllRepairsByDeviceIdNoContent() throws Exception {
-		// given
-		Long id = 1L;
-		List<Repair> repairs = List.of();
-		// when
-		when(repairService.findByDeviceId(id)).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/devices/{id}/repairs", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllRepairsByUserId() throws Exception {
-		// given
-		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
-		// when
-		when(repairService.findByUserId(id)).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/users/{id}/repairs", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(repairs.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllRepairsByUserIdNoContent() throws Exception {
-		// given
-		Long id = 1L;
+    @Test
+    public void testGetRepairById_WithNonExistingRepairId_ReturnsNotFound() {
+        // given
+        long repairId = 999L;
+        // when
+        when(repairService.findById(repairId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<EntityModel<RepairDtoGetDetails>> response = repairController.getRepairById(repairId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-		List<Repair> repairs = List.of();
-		// when
-		when(repairService.findByUserId(id)).thenReturn(repairs);
-		// then
-		mockMvc.perform(get("/api/users/{id}/repairs", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testGetAllRepairsByDeviceId_WithRepairs_ReturnsListOfRepairs() {
+        // given
+        long deviceId = 1L;
+        List<RepairDtoGet> repairsByDeviceId = List.of(
+            new RepairDtoGet(new Date(), new BigDecimal("100.00")),
+            new RepairDtoGet(new Date(), new BigDecimal("100.00"))
+        );
+        // when
+        when(repairService.findByDeviceId(deviceId)).thenReturn(repairsByDeviceId);
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairsByDeviceId(deviceId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().getContent().stream().toList().get(1).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("device-by-id"));
+        assertNotNull(response.getBody().getLink("delete-repairs_by_device_id"));
+    }
 
-	@Test
-	void testCreateRepair() throws Exception {
+    @Test
+    public void testGetAllRepairsByDeviceId_WithNoRepairs_ReturnsNoContent() {
+        // given
+        long deviceId = 1L;
+        // when
+        when(repairService.findByDeviceId(deviceId)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairsByDeviceId(deviceId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	}
+    @Test
+    public void testGetAllRepairsByUserId_WithRepairs_ReturnsListOfRepairs() {
+        // given
+        long userId = 1L;
+        List<RepairDtoGet> repairsByUserId = List.of(
+            new RepairDtoGet(new Date(), new BigDecimal("100.00")),
+            new RepairDtoGet(new Date(), new BigDecimal("100.00"))
+        );
+        // when
+        when(repairService.findByUserId(userId)).thenReturn(repairsByUserId);
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairsByUserId(userId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().getContent().stream().toList().get(1).getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("user-by-id"));
+        assertNotNull(response.getBody().getLink("delete-repairs_by_user_id"));
+    }
 
-	@Test
-	void testUpdateRepair() {
+    @Test
+    public void testGetAllRepairsByUserId_WithNoRepairs_ReturnsNoContent() {
+        // given
+        long userId = 1L;
+        // when
+        when(repairService.findByUserId(userId)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<RepairDtoGet>> response = repairController.getAllRepairsByUserId(userId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	}
+    @Test
+    public void testCreateRepair_WithValidData_ReturnsCreatedRepair() {
+        // given
+        RepairDtoPost repairDtoPost = new RepairDtoPost(
+			new BigDecimal("100.00"), 
+			"Repair 1"
+		);
+        RepairDtoGetDetails repairDetails = new RepairDtoGetDetails(
+            new Date(),
+			new BigDecimal("100.00"), 
+			"Repair 1", 
+			null,
+			new ArrayList<>()
+        );
+        // when
+        when(repairService.createRepair(1L, 1L, repairDtoPost)).thenReturn(repairDetails);
+        // then
+        ResponseEntity<RepairDtoGetDetails> response = repairController.createRepair(1L, 1L, repairDtoPost);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Repair 1", response.getBody().getNote());
+        assertTrue(response.getBody().getCost().equals(new BigDecimal("100.00")));
+        assertTrue(response.getBody().getUsedElements().isEmpty());
+    }
 
-	@Test
-	void testDeleteRepair() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(repairService).deleteById(id);
-		// then
-		mockMvc.perform(delete("/api/repairs/{id}", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testDeleteRepair_WithExistingRepairId_ReturnsNoContent() {
+        // given
+        long repairId = 1L;
+        // when
+        ResponseEntity<?> response = repairController.deleteRepair(repairId);
+        // then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(repairService, times(1)).deleteById(repairId);
+    }
 
-	@Test
-	void testDeleteAllRepairs() throws Exception {
-		// when
-		doNothing().when(repairService).deleteAll();
-		// then
-		mockMvc.perform(delete("/api/repairs"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testAddUsedElementToRepair_WithValidData_ReturnsOk() {
+        // given
+        long repairId = 1L;
+        long elementId = 1L;
+        RepairDtoGetDetails repairDetails = new RepairDtoGetDetails(
+            new Date(),
+			new BigDecimal("100.00"), 
+			"Repair 1", 
+			null,
+			new ArrayList<>()
+        );
+        // when
+        when(repairService.addElementToRepair(repairId, elementId)).thenReturn(repairDetails);
+        // then
+        ResponseEntity<?> response = repairController.addElement(repairId, elementId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
-	@Test
-	void testDeleteAllRepairsOfDevices() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(repairService).deleteByDeviceId(id);
-		// then
-		mockMvc.perform(delete("/api/devices/{id}/repairs", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteAllRepairsOfUsers() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(repairService).deleteByUserId(id);
-		// then
-		mockMvc.perform(delete("/api/users/{id}/repairs", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testRemoveUsedElementFromRepair_WithValidData_ReturnsOk() {
+        // given
+        long repairId = 1L;
+        long elementId = 1L;
+        // when
+        repairController.deleteElementFromRepair(repairId, elementId);
+        // then
+        verify(repairService, times(1)).deleteElementFromRepair(repairId, elementId);
+    }
 
 }

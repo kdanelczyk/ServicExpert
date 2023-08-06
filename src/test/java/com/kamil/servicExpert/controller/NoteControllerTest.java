@@ -1,195 +1,234 @@
 package com.kamil.servicExpert.controller;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kamil.servicExpert.db.mapper.NoteMapper;
 import com.kamil.servicExpert.db.model.Note;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
 import com.kamil.servicExpert.service.NoteService;
 
-@WebMvcTest(NoteController.class)
-@ExtendWith(MockitoExtension.class)
-class NoteControllerTest {
-	
-	@MockBean
-	private NoteService noteService;
-	
-	@MockBean
-	private NoteMapper noteMapper;
+public class NoteControllerTest {
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private MockMvc mockMvc;
-	
-    @Autowired
-    private WebApplicationContext context;
+    private NoteService noteService;
+    private NoteController noteController;
 
     @BeforeEach
-    public void setup() {
-        mockMvc =  MockMvcBuilders.webAppContextSetup(this.context).build();
+    public void setUp() {
+        noteService = mock(NoteService.class);
+        noteController = new NoteController(noteService);
     }
-    
-	@Test
-	void testGetAllNotes() throws Exception {
-		// given
-		Note note = Note
-				.builder()
-				.description("description of note")
-				.build();
-		List<Note> notes = List.of(note);
-		// when
-		when(noteService.findAll()).thenReturn(notes);
+
+    @Test
+    public void testGetAllNotes_WithNotes_ReturnsListOfNotes() {
+        // given
+        List<NoteDtoGet> notes = List.of(
+            new NoteDtoGet("Note 1", new Date()),
+            new NoteDtoGet("Note 2", new Date())
+        );
+        // when
+        when(noteService.findAll()).thenReturn(notes);
+        // then
+        ResponseEntity<CollectionModel<NoteDtoGet>> response = noteController.getAllNotes();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertEquals("Note 1", response.getBody().getContent().stream().toList().get(0).getDescription());
+        assertEquals("Note 2", response.getBody().getContent().stream().toList().get(1).getDescription());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("delete-notes"));
+    }
+
+    @Test
+    public void testGetAllNotes_WithNoNotes_ReturnsNoContent() {
+        // given
+        // when
+        when(noteService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<NoteDtoGet>> response = noteController.getAllNotes();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetNoteById_WithExistingNoteId_ReturnsNoteDetails() {
+        // given
+        long noteId = 1L;
+        NoteDtoGet note = new NoteDtoGet(
+			"Note 1",
+			 new Date()
+        );
+        // when
+        when(noteService.findById(noteId)).thenReturn(Optional.of(note));
+        // then
+        ResponseEntity<EntityModel<NoteDtoGet>> response = noteController.getNoteById(noteId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Note 1", response.getBody().getContent().getDescription());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("all-notes"));
+        assertNotNull(response.getBody().getLink("delete-note"));
+    }
+
+    @Test
+    public void testGetNoteById_WithNonExistingNoteId_ReturnsNotFound() {
+        // given
+        long noteId = 999L;
+        // when
+        when(noteService.findById(noteId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<EntityModel<NoteDtoGet>> response = noteController.getNoteById(noteId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetAllNotesByUserId_WithNotesForUser_ReturnsListOfNotes() {
+        // given
+        long userId = 1L;
+        List<NoteDtoGet> notesForUser = List.of(
+            new NoteDtoGet("Note 1", new Date()),
+            new NoteDtoGet("Note 2", new Date())
+        );
+        // when
+        when(noteService.findByUserId(userId)).thenReturn(notesForUser);
+        // then
+        ResponseEntity<CollectionModel<NoteDtoGet>> response = noteController.getAllNotesByUserId(userId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertEquals("Note 1", response.getBody().getContent().stream().toList().get(0).getDescription());
+        assertEquals("Note 2", response.getBody().getContent().stream().toList().get(1).getDescription());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("user-by-id"));
+        assertNotNull(response.getBody().getLink("delete-devices-by-type-id"));
+    }
+
+    @Test
+    public void testGetAllNotesByUserId_WithNoNotesForUser_ReturnsNoContent() {
+        // given
+        long userId = 1L;
+        // when
+        when(noteService.findByUserId(userId)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<NoteDtoGet>> response = noteController.getAllNotesByUserId(userId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testCreateNoteForUser_ValidInput_ReturnsCreatedNoteDetails() {
+        // given
+        long userId = 1L;
+        NoteDtoPost noteDtoPost = new NoteDtoPost("New Note");
+        NoteDtoGet createdNote = new NoteDtoGet("New Note", new Date());
+        // when
+        when(noteService.createNoteForUser(userId, noteDtoPost)).thenReturn(createdNote);
+        // then
+        ResponseEntity<NoteDtoGet> response = noteController.createNoteForUser(userId, noteDtoPost);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(createdNote, response.getBody());
+    }
+
+    @Test
+    public void testCreateNote_ValidInput_ReturnsCreatedNoteDetails() {
+        // given
+        NoteDtoPost noteDtoPost = new NoteDtoPost("New Note");
+        NoteDtoGet createdNote = new NoteDtoGet("New Note", new Date());
+        // when
+        when(noteService.createNote(noteDtoPost)).thenReturn(createdNote);
+        // then
+        ResponseEntity<NoteDtoGet> response = noteController.createNote(noteDtoPost);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(createdNote, response.getBody());
+    }
+
+    @Test
+    public void testUpdateNote_WithExistingNoteId_ReturnsUpdatedNoteDetails() {
+        // given
+        long noteId = 1L;
+        NoteDtoPost noteDtoPost = new NoteDtoPost("Updated Note");
+        NoteDtoGet updatedNote = new NoteDtoGet(
+            "Updated Note",
+            new Date()
+        );
+        // when
+        when(noteService.findById(noteId)).thenReturn(Optional.of(updatedNote));
+        when(noteService.updateNote(noteId, noteDtoPost)).thenReturn(updatedNote);
+        // then
+        ResponseEntity<NoteDtoGet> response = noteController.updateNote(noteId, noteDtoPost);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Updated Note", response.getBody().getDescription());
+        assertNotNull(response.getBody());
+        assertEquals(updatedNote, response.getBody());
+    }
+
+    @Test
+    public void testUpdateNote_WithNonExistingNoteId_ReturnsNotFound() {
+        // given
+        long noteId = 999L;
+        NoteDtoPost noteDtoPost = new NoteDtoPost("Updated Note");
+        // when
+        when(noteService.findById(noteId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<NoteDtoGet> response = noteController.updateNote(noteId, noteDtoPost);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testDeleteNote_WithExistingNoteId_ReturnsNoContent() {
+        // given
+        long noteId = 1L;
+        // when
+        ResponseEntity<HttpStatus> response = noteController.deleteNote(noteId);
+        // then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(noteService, times(1)).deleteById(noteId);
+    }
+
+    @Test
+    public void testDeleteAllNotesByUserId_WithExistingUserId_ReturnsNoContent() {
+        // given
+        long userId = 1L;
+        // when
 		// then
-		mockMvc.perform(get("/api/notes"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(notes.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllNotesNoContent() throws Exception {
-		// given
-		List<Note> notes = List.of();
-		// when
-		when(noteService.findAll()).thenReturn(notes);
+        ResponseEntity<List<Note>> response = noteController.deleteAllNotesByUserId(userId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(noteService, times(1)).deleteByUserId(userId);
+    }
+
+    @Test
+    public void testDeleteAllNotes_WithAllNotesDeleted_ReturnsNoContent() {
+        // given
+        // when
 		// then
-		mockMvc.perform(get("/api/notes"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testGetNoteById() {
-
-	}
-
-	@Test
-	void testGetAllNotesByUserId() throws Exception {
-		// given
-		Long id = 1L;
-		Note note = Note
-				.builder()
-				.description("description of note")
-				.build();
-		List<Note> notes = List.of(note);
-		// when
-		when(noteService.findByUserId(id)).thenReturn(notes);
-		// then
-		mockMvc.perform(get("/api/users/{id}/notes", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(notes.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllNotesByUserIdNoContent() throws Exception {
-		// given
-		Long id = 1L;
-		List<Note> notes = List.of();
-		// when
-		when(noteService.findByUserId(id)).thenReturn(notes);
-		// then
-		mockMvc.perform(get("/api/users/{id}/notes", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testCreateNoteForUser() throws Exception {
-		// given
-		Long id = 1L;
-		Note note = Note
-				.builder()
-				.description("description of note")
-				.build();
-		// when
-		when(noteService.createNoteForUser(id, note)).thenReturn(note);
-		// then
-		mockMvc.perform(post("/api/users/{id}/notes", id)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(note)))
-				.andExpect(status().isCreated())
-				.andDo(print());
-	}
-
-	@Test
-	void testCreateNote() throws Exception {
-		// given
-		Long id = 1L;
-		Note note = Note
-				.builder()
-				.description("description of note")
-				.build();
-		// when
-		when(noteService.createNote(note)).thenReturn(note);
-		// then
-		mockMvc.perform(post("/api/notes", id)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(note)))
-				.andExpect(status().isCreated())
-				.andDo(print());
-	}
-
-	@Test
-	void testUpdateNote() {
-
-	}
-
-	@Test
-	void testDeleteNote() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(noteService).deleteById(id);
-		// then
-		mockMvc.perform(delete("/api/notes/{id}", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteAllNotes() throws Exception {
-		// when
-		doNothing().when(noteService).deleteAll();
-		// then
-		mockMvc.perform(delete("/api/notes"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteAllNotesByUserId() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(noteService).deleteByUserId(id);
-		// then
-		mockMvc.perform(delete("/api/users/{id}/notes", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+        ResponseEntity<HttpStatus> response = noteController.deleteAllNotes();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(noteService, times(1)).deleteAll();
+    }
 
 }

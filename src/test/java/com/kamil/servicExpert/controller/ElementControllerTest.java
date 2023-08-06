@@ -1,204 +1,271 @@
 package com.kamil.servicExpert.controller;
-
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kamil.servicExpert.db.mapper.ElementMapper;
-import com.kamil.servicExpert.db.mapper.RepairMapper;
-import com.kamil.servicExpert.db.model.Element;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
 import com.kamil.servicExpert.service.ElementService;
 
-@WebMvcTest(ElementController.class)
-@ExtendWith(MockitoExtension.class)
-class ElementControllerTest {
+public class ElementControllerTest {
 
-	@MockBean
-	private ElementService elementService;
-	
-	@MockBean
-	private ElementMapper elementMapper;
-	
-	@MockBean
-	private RepairMapper repairMapper;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private MockMvc mockMvc;
-	
-    @Autowired
-    private WebApplicationContext context;
+    private ElementService elementService;
+    private ElementController elementController;
 
     @BeforeEach
-    public void setup() {
-        mockMvc =  MockMvcBuilders.webAppContextSetup(this.context).build();
+    public void setUp() {
+        elementService = mock(ElementService.class);
+        elementController = new ElementController(elementService);
     }
-    
-	@Test
-	void testGetAllElements() throws Exception {
-		// given
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		List<Element> elements = List.of(element);
-		// when
-		when(elementService.findAll()).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/elements"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(elements.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testFindAllElementsNotFound() throws Exception {
-		// given
-		List<Element> elements = List.of();
-		// when
-		when(elementService.findAll()).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/elements"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
 
-	@Test
-	void testGetElementById() {
+    @Test
+    public void testGetAllElements_WithElements_ReturnsListOfElements() {
+        // given
+        List<ElementDtoGet> elements = List.of(
+            new ElementDtoGet(50, "Element 1"),
+            new ElementDtoGet(60, "Element 2")
+        );
+        // when
+        when(elementService.findAll()).thenReturn(elements);
+        // then
+        ResponseEntity<CollectionModel<ElementDtoGet>> response = elementController.getAllElements();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).getElementName().equals("Element 1"));
+        assertTrue(response.getBody().getContent().stream().toList().get(1).getElementName().equals("Element 2"));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("delete-elements"));
+    }
 
-	}
+    @Test
+    public void testGetAllElements_WithNoElements_ReturnsNoContent() {
+        // given
+        // when
+        when(elementService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<ElementDtoGet>> response = elementController.getAllElements();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	@Test
-	void testGetAllElementsByTypeId() throws Exception  {
-		// given
-		Long id = 1L;
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		List<Element> elements = List.of(element);
-		// when
-		when(elementService.findByTypeId(id)).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/types/{id}/elements", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(elements.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllElementsByTypeIdNoContent() throws Exception  {
-		// given
-		Long id = 1L;
-		List<Element> elements = List.of();
-		// when
-		when(elementService.findByTypeId(id)).thenReturn(elements);
-		// then
-		mockMvc.perform(get("/api/types/{id}/elements", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testGetElementById_WithExistingElementId_ReturnsElementDetails() {
+        // given
+        long elementId = 1L;
+        ElementDtoGetDetails elementDetails = new ElementDtoGetDetails(
+            50,
+            10, 
+            "Element 1", 
+            new BigDecimal("70.00")
+        );
+        // when
+        when(elementService.findById(elementId)).thenReturn(Optional.of(elementDetails));
+        // then
+        ResponseEntity<EntityModel<ElementDtoGetDetails>> response = elementController.getElementById(elementId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().getElementName().equals("Element 1"));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("all-elements"));
+        assertNotNull(response.getBody().getLink("delete-element"));
+    }
 
-	@Test
-	void testGetAllRepairsByElementId() throws Exception  {
+    @Test
+    public void testGetElementById_WithNonExistingElementId_ReturnsNotFound() {
+        // given
+        long elementId = 999L;
+        // when
+        when(elementService.findById(elementId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<EntityModel<ElementDtoGetDetails>> response = elementController.getElementById(elementId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+    @Test
+    public void testGetAllElementsByTypeId_WithElementsOfType_ReturnsListOfElements() {
+        // given
+        long typeId = 1L;
+        List<ElementDtoGet> elementsOfType = List.of(
+            new ElementDtoGet(50, "Element 1"),
+            new ElementDtoGet(60, "Element 2")
+        );
+        // when
+        when(elementService.findByTypeId(typeId)).thenReturn(elementsOfType);
+        // then
+        ResponseEntity<CollectionModel<ElementDtoGet>> response = elementController.getAllElementsByTypeId(typeId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).getElementName().equals("Element 1"));
+        assertTrue(response.getBody().getContent().stream().toList().get(1).getElementName().equals("Element 2"));
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("type-by-id"));
+        assertNotNull(response.getBody().getLink("delete-elements_by_type_id"));
+    }
 
-	}
+    @Test
+    public void testGetAllElementsByTypeId_WithNoElementsOfType_ReturnsNoContent() {
+        // given
+        long typeId = 1L;
+        // when
+        when(elementService.findByTypeId(typeId)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<ElementDtoGet>> response = elementController.getAllElementsByTypeId(typeId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	@Test
-	void testCreateElementForType() throws Exception  {
-		// given
-		Long id = 1L;
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		// when
-		when(elementService.save(element)).thenReturn(element);
-		// then
-		mockMvc.perform(post("/api/types/{id}/elements", id)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(element)))
-				.andExpect(status().isCreated())
-				.andDo(print());
-	}
+    @Test
+    public void testGetAllElements_WithNoContent_ReturnsNoContent() {
+        // given
+        // when
+        when(elementService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<ElementDtoGet>> response = elementController.getAllElements();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	@Test
-	void testUpdateElement() {
+    @Test
+    public void testCreateElementForType_ValidInput_ReturnsCreatedElementDetails() {
+        // given
+        long typeId = 1L;
+        ElementDtoPost elementDtoPost = new ElementDtoPost(
+            50,
+            10, 
+            "Element 1", 
+            new BigDecimal("70.00")
+        );
+        ElementDtoGetDetails createdElementDetails = new ElementDtoGetDetails(
+            20,
+            10, 
+            "Element 2", 
+            new BigDecimal("30.00")
+        );
+        // when
+        when(elementService.createElementForType(typeId, elementDtoPost)).thenReturn(createdElementDetails);
+        // then
+        ResponseEntity<ElementDtoGetDetails> response = elementController.createElementForType(typeId, elementDtoPost);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(createdElementDetails, response.getBody());
+    }
 
-	}
+    @Test
+    public void testUpdateElement_WithExistingElementId_ReturnsUpdatedElementDetails() {
+        // given
+        long elementId = 1L;
+        ElementDtoPost elementDtoPost = new ElementDtoPost(
+            50,
+            10, 
+            "Element 1", 
+            new BigDecimal("70.00")
+        );
+        ElementDtoGetDetails updatedElementDetails = new ElementDtoGetDetails(
+            50,
+            10, 
+            "Element 2", 
+            new BigDecimal("70.00")
+        );
+        // when
+        when(elementService.findById(elementId)).thenReturn(Optional.of(updatedElementDetails));
+        when(elementService.updateElement(elementId, elementDtoPost)).thenReturn(updatedElementDetails);
+        // then
+        ResponseEntity<ElementDtoGetDetails> response = elementController.updateElement(elementId, elementDtoPost);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Element 2", response.getBody().getElementName());
+        assertNotNull(response.getBody());
+        assertEquals(updatedElementDetails, response.getBody());
+    }
 
-	@Test
-	void testAddElement() throws Exception  {
+    @Test
+    public void testUpdateElement_WithNonExistingElementId_ReturnsNotFound() {
+        // given
+        long elementId = 999L;
+        ElementDtoPost elementDtoPost = new ElementDtoPost(
+            50,
+            10, 
+            "Element 1", 
+            new BigDecimal("70.00")
+        );
+        // when
+        when(elementService.findById(elementId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<ElementDtoGetDetails> response = elementController.updateElement(elementId, elementDtoPost);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	}
+    @Test
+    public void testUpdateElement_WithInvalidElementId_ReturnsNotFound() {
+        // given
+        long elementId = 999L;
+        ElementDtoPost elementDtoPost = new ElementDtoPost(
+            50,
+            10, 
+            "Element 1", 
+            new BigDecimal("70.00")
+        );
+        // when
+        when(elementService.findById(elementId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<ElementDtoGetDetails> response = elementController.updateElement(elementId, elementDtoPost);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
-	@Test
-	void testDeleteElement() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(elementService).deleteById(id);
-		// then
-		mockMvc.perform(delete("/api/elements/{id}", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testDeleteElement_WithExistingElementId_ReturnsNoContent() {
+        // given
+        long elementId = 1L;
+        // when
+        ResponseEntity<HttpStatus> response = elementController.deleteElement(elementId);
+        // then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(elementService, times(1)).deleteById(elementId);
+    }
 
-	@Test
-	void testDeleteAllElements() throws Exception {
-		// when
-		doNothing().when(elementService).deleteAll();
-		// then
-		mockMvc.perform(delete("/api/elements"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testDeleteAllElements_AllElementsDeleted_ReturnsNoContent() {
+        // given
+        // when
+        // then
+        ResponseEntity<HttpStatus> response = elementController.deleteAllElements();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(elementService, times(1)).deleteAll();
+    }
 
-	@Test
-	void testDeleteAllElementsOfType() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(elementService).deleteByTypeId(id);
-		// then
-		mockMvc.perform(delete("/api/types/{id}/elements", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testDeleteAllElementsOfType_WithExistingTypeId_ReturnsNoContent() {
+        // given
+        long typeId = 1L;
+        // when
+        // then
+        ResponseEntity<List<ElementDtoGet>> response = elementController.deleteAllElementsOfType(typeId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(elementService, times(1)).deleteByTypeId(typeId);
+    }
 
 }

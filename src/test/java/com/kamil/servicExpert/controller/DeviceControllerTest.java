@@ -1,243 +1,366 @@
 package com.kamil.servicExpert.controller;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kamil.servicExpert.db.mapper.DeviceMapper;
 import com.kamil.servicExpert.db.model.Device;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 import com.kamil.servicExpert.service.DeviceService;
 
-@WebMvcTest(DeviceController.class)
-@ExtendWith(MockitoExtension.class)
-class DeviceControllerTest {
+public class DeviceControllerTest {
 
-	@MockBean
-	private DeviceService deviceService;
-	
-	@MockBean
-	private DeviceMapper deviceMapper;
-	
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private MockMvc mockMvc;
-	
-    @Autowired
-    private WebApplicationContext context;
+    private DeviceService deviceService;
+    private DeviceController deviceController;
 
     @BeforeEach
-    public void setup() {
-        mockMvc =  MockMvcBuilders.webAppContextSetup(this.context).build();
+    public void setUp() {
+        deviceService = mock(DeviceService.class);
+        deviceController = new DeviceController(deviceService);
+    }
+
+    @Test
+    public void testFindByRepaired_WithRepairedDevices_ReturnsListOfDevices() {
+        // given
+        List<DeviceDtoGet> repairedDevices = List.of(
+            new DeviceDtoGet("John Doe", true),
+            new DeviceDtoGet("Jane Smith", true)
+        );
+        // when
+        when(deviceService.findByRepaired(true)).thenReturn(repairedDevices);
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.findByRepaired();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).isRepaired());
+        assertTrue(response.getBody().getContent().stream().toList().get(1).isRepaired());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("not-repaired-devices"));
+        assertNotNull(response.getBody().getLink("all-devices"));
+    }
+
+	@Test
+    public void testFindByNotRepaired_WithNotRepairedDevices_ReturnsListOfDevices() {
+        // given
+        List<DeviceDtoGet> notRepairedDevices = List.of(
+            new DeviceDtoGet("John Doe", false),
+            new DeviceDtoGet("Jane Smith", false)
+        );
+        // when
+        when(deviceService.findByRepaired(false)).thenReturn(notRepairedDevices);
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.findByNotRepaired();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().getContent().stream().toList().get(0).isRepaired());
+        assertFalse(response.getBody().getContent().stream().toList().get(1).isRepaired());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("not-repaired-devices"));
+        assertNotNull(response.getBody().getLink("all-devices"));
+    }
+
+    @Test
+    public void testFindByRepaired_WithNoRepairedDevices_ReturnsNoContent() {
+        // given
+        // when
+        when(deviceService.findByRepaired(true)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.findByRepaired();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testFindByNotRepaired_WithNoNotRepairedDevices_ReturnsNoContent() {
+        // given
+        // when
+        when(deviceService.findByRepaired(false)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.findByNotRepaired();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetAllDevices() {
+        // given
+        List<DeviceDtoGet> devices = List.of(
+            new DeviceDtoGet("John Doe", true),
+            new DeviceDtoGet("Jane Smith", false),
+            new DeviceDtoGet("Jane Doe", true)
+        );
+        // when
+        when(deviceService.findAll()).thenReturn(devices); 
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevices();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(3, response.getBody().getContent().size());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().stream().toList().get(0).isRepaired());
+        assertFalse(response.getBody().getContent().stream().toList().get(1).isRepaired());
+        assertTrue(response.getBody().getContent().stream().toList().get(2).isRepaired());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("not-repaired-devices"));
+        assertNotNull(response.getBody().getLink("all-devices"));
+    }
+
+    @Test
+    public void testGetDeviceById_WithExistingDeviceId_ReturnsDeviceDetails() {
+        // given
+        long deviceId = 1L;
+        DeviceDtoGetDetails deviceDetails = new DeviceDtoGetDetails(
+            404404404, 
+            "Device 1", new Date(), 
+            true
+        );
+        // when
+        when(deviceService.findById(deviceId)).thenReturn(Optional.of(deviceDetails));
+        // then
+        ResponseEntity<EntityModel<DeviceDtoGetDetails>> response = deviceController.getDeviceById(deviceId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().isRepaired());
+        assertEquals(404404404, response.getBody().getContent().getCustomerPhoneNumber());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("all-devices"));
+        assertNotNull(response.getBody().getLink("all-repairs-by-device-id"));
+        assertNotNull(response.getBody().getLink("delete-device"));
+        assertNotNull(response.getBody().getLink("delete-all-repairs-of-device"));
+    }
+
+    @Test
+    public void testGetDeviceById_WithNonExistingDeviceId_ReturnsNotFound() {
+        // given
+        long deviceId = 999L;
+        // when
+        when(deviceService.findById(deviceId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<EntityModel<DeviceDtoGetDetails>> response = deviceController.getDeviceById(deviceId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+	@Test
+    public void testGetAllDevicesByTypeId_WithExistingTypeId_ReturnsListOfDevices() {
+        // given
+        long typeId = 1L;
+        List<DeviceDtoGet> devicesOfType = List.of(
+            new DeviceDtoGet("John Doe", true),
+            new DeviceDtoGet("Jane Smith", true)
+        );
+        // when
+        when(deviceService.findByTypeId(typeId)).thenReturn(devicesOfType);
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevicesByTypeId(typeId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("type-id"));
+        assertNotNull(response.getBody().getLink("delete-devices-by-type-id"));
+    }
+
+    @Test
+    public void testGetAllDevicesByTypeId_WithNoDevicesOfType_ReturnsNoContent() {
+        // given
+        long typeId = 1L;
+        // when
+        when(deviceService.findByTypeId(typeId)).thenReturn(new ArrayList<>());
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevicesByTypeId(typeId);
+        // then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+	@Test
+    public void testGetAllDevices_WithDevices_ReturnsListOfDevices() {
+        // given
+        List<DeviceDtoGet> devices = List.of(
+            new DeviceDtoGet("John Doe", true),
+            new DeviceDtoGet("John Doe", true)
+        );
+        // when
+        when(deviceService.findAll()).thenReturn(devices);
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevices();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLinks());
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("repaired-devices"));
+        assertNotNull(response.getBody().getLink("not-repaired-devices"));
+        assertNotNull(response.getBody().getLink("all-devices"));
+        assertNotNull(response.getBody().getLink("delete-devices"));
+    }
+
+    @Test
+    public void testGetAllDevices_WithNoDevices_ReturnsNoContent() {
+        // given
+        // when
+        when(deviceService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevices();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testUpdateDevice_WithInvalidDeviceId_ReturnsNotFound() {
+        // given
+        long deviceId = 999L;
+        DeviceDtoPost deviceDtoPost = new DeviceDtoPost(
+            404404404, 
+            "John Doe"
+        );
+        // when
+        when(deviceService.findById(deviceId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<DeviceDtoGetDetails> response = deviceController.updateDevice(deviceId, deviceDtoPost);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetAllDevices_WithNoContent_ReturnsNoContent() {
+        // given
+        // when
+        when(deviceService.findAll()).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevices();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetAllDevicesByTypeId_WithNoContent_ReturnsNoContent() {
+        // given
+        long typeId = 1L;
+        // when
+        when(deviceService.findByTypeId(typeId)).thenReturn(new ArrayList<>());
+        // then
+        ResponseEntity<CollectionModel<DeviceDtoGet>> response = deviceController.getAllDevicesByTypeId(typeId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
     }
     
-	@Test
-	void testFindByNotRepaired() throws Exception {
-		// given
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(false)
-				.build();
-		List<Device> devices = List.of(device);
-		// when
-		when(deviceService.findByRepaired(false)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices/not-repaired"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(devices.size()))
-				.andDo(print());
-	}
+    @Test
+    public void testCreateDeviceForType_ValidInput_ReturnsCreatedDeviceDetails() {
+        // given
+        long typeId = 1L;
+        DeviceDtoPost deviceDtoPost = new DeviceDtoPost(
+            404404404, 
+            "John Doe"
+        );
+        DeviceDtoGetDetails createdDeviceDetails = new DeviceDtoGetDetails(
+            404404404, 
+            "Device 1", new Date(), 
+            true
+        );
+        // when
+        when(deviceService.createDeviceForType(typeId, deviceDtoPost)).thenReturn(createdDeviceDetails);
+        // then
+        ResponseEntity<DeviceDtoGetDetails> response = deviceController.createDeviceForType(typeId, deviceDtoPost);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(createdDeviceDetails, response.getBody());
+    }
 	
-	@Test
-	void testFindByNotRepairedNoContent() throws Exception {
-		// given
-		List<Device> devices = List.of();
-		// when
-		when(deviceService.findByRepaired(false)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices/not-repaired"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testUpdateDevice_WithExistingDeviceId_ReturnsUpdatedDeviceDetails() {
+        // given
+        long deviceId = 1L;
+        DeviceDtoPost deviceDtoPost = new DeviceDtoPost(
+            404404404, 
+            "John Doe"
+        );
+        DeviceDtoGetDetails updatedDeviceDetails = new DeviceDtoGetDetails(
+            404404404,
+            "Device 1", 
+            new Date(), 
+            true
+        );
+        // when
+        when(deviceService.findById(deviceId)).thenReturn(Optional.of(updatedDeviceDetails));
+        when(deviceService.updateDevice(deviceId, deviceDtoPost)).thenReturn(updatedDeviceDetails);
+        // then
+        ResponseEntity<DeviceDtoGetDetails> response = deviceController.updateDevice(deviceId, deviceDtoPost);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Device 1", response.getBody().getCustomerName());
+        assertNotNull(response.getBody());
+        assertEquals(updatedDeviceDetails, response.getBody());
+    }
+
+    @Test
+    public void testUpdateDevice_WithNonExistingDeviceId_ReturnsNotFound() {
+        // given
+        long deviceId = 999L;
+        DeviceDtoPost deviceDtoPost = new DeviceDtoPost(
+            404404404, 
+            "John Doe"
+        );
+        // when
+        when(deviceService.findById(deviceId)).thenReturn(Optional.empty());
+        // then
+        ResponseEntity<DeviceDtoGetDetails> response = deviceController.updateDevice(deviceId, deviceDtoPost);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testDeleteDevice_WithExistingDeviceId_ReturnsNoContent() {
+        // given
+        long deviceId = 1L;
+        // when
+        ResponseEntity<HttpStatus> response = deviceController.deleteDevice(deviceId);
+        //then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(deviceService, times(1)).deleteById(deviceId);
+    }
 
 	@Test
-	void testFindByRepaired() throws Exception {
-		// given
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
-				.build();
-		List<Device> devices = List.of(device);
-		// when
-		when(deviceService.findByRepaired(true)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices/repaired"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(devices.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testFindByRepairedNoContent() throws Exception {
-		// given
-		List<Device> devices = List.of();
-		// when
-		when(deviceService.findByRepaired(true)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices/repaired"))
-		.andExpect(status().isNoContent())
-		.andDo(print());;
-	}
+    public void testDeleteAllDevices_AllDevicesDeleted_ReturnsNoContent() {
+        // given
+        //when
+        //then
+        ResponseEntity<HttpStatus> response = deviceController.deleteAllDevices();
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(deviceService, times(1)).deleteAll();
+    }
 
-	@Test
-	void testGetAllDevices() throws Exception {
-		// given
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(false)
-				.build();
-		List<Device> devices = List.of(device);
-		// when
-		when(deviceService.findAll()).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(devices.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testFindAllDevicesNotFound() throws Exception {
-		// given
-		List<Device> devices = List.of();
-		// when
-		when(deviceService.findAll()).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testGetDeviceById() {
-	}
-
-	@Test
-	void testGetAllDevicesByTypeId() throws Exception {
-		// given
-		long id = 1L;
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(false)
-				.build();
-		List<Device> devices = List.of(device);
-		// when
-		when(deviceService.findByTypeId(id)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/types/{id}/devices", id))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()").value(devices.size()))
-				.andDo(print());
-	}
-	
-	@Test
-	void testGetAllDevicesByTypeIdNoContent() throws Exception {
-		// given
-		long id = 1L;
-		List<Device> devices = List.of();
-		// when
-		when(deviceService.findByTypeId(id)).thenReturn(devices);
-		// then
-		mockMvc.perform(get("/api/devices"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testCreateDeviceForType() throws Exception {
-		// given
-		long id = 1L;
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.build();
-		// when
-		when(deviceService.save(device)).thenReturn(device);
-		// then
-		mockMvc.perform(post("/api/types/{id}/devices", id)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(device)))
-				.andExpect(status().isCreated())
-				.andDo(print());
-	}
-
-	@Test
-	void testUpdateDevice() {
-
-	}
-
-	@Test
-	void testDeleteDevice() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(deviceService).deleteById(id);
-		// then
-		mockMvc.perform(delete("/api/devices/{id}", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteAllDevices() throws Exception {
-		// when
-		doNothing().when(deviceService).deleteAll();
-		// then
-		mockMvc.perform(delete("/api/devices"))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
-
-	@Test
-	void testDeleteAllDevicesOfType() throws Exception {
-		// given
-		long id = 1L;
-		// when
-		doNothing().when(deviceService).deleteByTypeId(id);
-		// then
-		mockMvc.perform(delete("/api/types/{id}/devices", id))
-				.andExpect(status().isNoContent())
-				.andDo(print());
-	}
+    @Test
+    public void testDeleteAllDevicesOfType_WithExistingTypeId_ReturnsNoContent() {
+        // given
+        long typeId = 1L;
+        //when
+        //then
+        ResponseEntity<List<Device>> response = deviceController.deleteAllDevicesOfType(typeId);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(deviceService, times(1)).deleteByTypeId(typeId);
+    }
 
 }

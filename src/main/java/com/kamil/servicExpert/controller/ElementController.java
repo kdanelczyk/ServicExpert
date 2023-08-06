@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamil.servicExpert.db.model.Element;
 import com.kamil.servicExpert.model.Element.ElementDtoGet;
 import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
 import com.kamil.servicExpert.model.Element.ElementDtoPost;
@@ -126,7 +125,7 @@ public class ElementController {
 
 	@DeleteMapping("/types/{typeId}/elements")
 	@PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<List<Element>> deleteAllElementsOfType(@PathVariable(value = "typeId") Long typeId) {
+	public ResponseEntity<List<ElementDtoGet>> deleteAllElementsOfType(@PathVariable(value = "typeId") Long typeId) {
 		elementService.deleteByTypeId(typeId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
