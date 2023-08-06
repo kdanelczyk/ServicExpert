@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.kamil.servicExpert.db.model.User;
+import com.kamil.servicExpert.model.User.UserDtoGet;
 
 @WebMvcTest(UserService.class)
 @ExtendWith(MockitoExtension.class)
@@ -104,7 +104,7 @@ class UserServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<User> users = new ArrayList<>();
+		List<UserDtoGet> users = new ArrayList<>();
 		// When
 		when(userService.findAll()).thenReturn(users);
 		// Then
@@ -113,25 +113,19 @@ class UserServiceTest {
 	}
 
 	@Test
-	void testSave() {
-		userService.save(null);
-		verify(userService).save(null);
-	}
-
-	@Test
-	void testUpdateUser() {
-		userService.updateUser(1L, null);
-		verify(userService).updateUser(1L, null);
-	}
-
-	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		userService.deleteById(1L);
 		verify(userService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		userService.deleteAll();
 		verify(userService).deleteAll();
 	}

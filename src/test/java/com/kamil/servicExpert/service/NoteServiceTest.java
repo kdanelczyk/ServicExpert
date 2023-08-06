@@ -15,7 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.kamil.servicExpert.db.model.Note;
+import com.kamil.servicExpert.model.Note.NoteDtoGet;
+import com.kamil.servicExpert.model.Note.NoteDtoPost;
 
 @WebMvcTest(NoteService.class)
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +52,7 @@ class NoteServiceTest {
 	void testFindById() {
 		// Given
 		Long id = 1L;
-		Note note = Note
+		NoteDtoGet note = NoteDtoGet
 				.builder()
 				.description("description of note")
 				.build();
@@ -88,7 +89,7 @@ class NoteServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<Note> notes = new ArrayList<>();
+		List<NoteDtoGet> notes = new ArrayList<>();
 		// When
 		when(noteService.findAll()).thenReturn(notes);
 		// Then
@@ -99,11 +100,11 @@ class NoteServiceTest {
 	@Test
 	void testFindAllNotEmpty() {
 		// Given
-		Note note = Note
+		List<NoteDtoGet> notes = List.of(NoteDtoGet
 				.builder()
 				.description("description of note")
-				.build();
-		List<Note> notes = List.of(note);
+				.build()
+		);
 		// When
 		when(noteService.findAll()).thenReturn(notes);
 		// Then
@@ -115,14 +116,18 @@ class NoteServiceTest {
 	@Test
 	void testSave() {
 		// Given
-		Note note = Note
+		NoteDtoPost note = NoteDtoPost
+				.builder()
+				.description("description of note")
+				.build();
+		NoteDtoGet noteGet = NoteDtoGet
 				.builder()
 				.description("description of note")
 				.build();
 		// When
-		when(noteService.save(note)).thenReturn(note);
+		when(noteService.save(note)).thenReturn(noteGet);
 		// Then
-        assertEquals(noteService.save(note), note);
+        assertEquals(noteService.save(note), noteGet);
         verify(noteService).save(note);
 	}
 
@@ -130,28 +135,36 @@ class NoteServiceTest {
 	void testCreateNoteForUser() {
 		// Given
 		Long id = 1L;
-		Note note = Note
+		NoteDtoPost note = NoteDtoPost
+				.builder()
+				.description("description of note")
+				.build();
+		NoteDtoGet noteGet = NoteDtoGet
 				.builder()
 				.description("description of note")
 				.build();
 		// When
-		when(noteService.createNoteForUser(id, note)).thenReturn(note);
+		when(noteService.createNoteForUser(id, note)).thenReturn(noteGet);
 		// Then
-        assertEquals(noteService.createNoteForUser(id, note), note);
+        assertEquals(noteService.createNoteForUser(id, note), noteGet);
         verify(noteService).createNoteForUser(id, note);
 	}
 
 	@Test
 	void testCreateNote() {
 		// Given
-		Note note = Note
+		NoteDtoPost note = NoteDtoPost
+				.builder()
+				.description("description of note")
+				.build();
+		NoteDtoGet noteGet = NoteDtoGet
 				.builder()
 				.description("description of note")
 				.build();
 		// When
-		when(noteService.createNote(note)).thenReturn(note);
+		when(noteService.createNote(note)).thenReturn(noteGet);
 		// Then
-        assertEquals(noteService.createNote(note), note);
+        assertEquals(noteService.createNote(note), noteGet);
         verify(noteService).createNote(note);
 	}
 
@@ -159,13 +172,13 @@ class NoteServiceTest {
 	void testUpdateNote() {
 		// Given
 		Long id = 1L;
-		Note note = Note
+		NoteDtoPost note = NoteDtoPost
 				.builder()
 				.description("description of note")
 				.build();
-		Note updatedNote = Note
+		NoteDtoGet updatedNote = NoteDtoGet
 				.builder()
-				.description("description of note")
+				.description("updated note")
 				.build();
 		// When
 		when(noteService.updateNote(id, note)).thenReturn(updatedNote);
@@ -176,24 +189,36 @@ class NoteServiceTest {
 
 	@Test
 	void testElementChecker() {
+		// Given
+		// When
+		// Then
 		noteService.elementChecker();
 		verify(noteService).elementChecker();
 	}
 
 	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		noteService.deleteById(1L);
 		verify(noteService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		noteService.deleteAll();
 		verify(noteService).deleteAll();
 	}
 	
 	@Test
 	void testDeleteByUserId() {
+		// Given
+		// When
+		// Then
 		noteService.deleteByUserId(1L);
 		verify(noteService).deleteByUserId(1L);
 	}

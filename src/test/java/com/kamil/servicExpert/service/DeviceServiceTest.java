@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.kamil.servicExpert.db.model.Device;
-import com.kamil.servicExpert.db.model.Type;
+import com.kamil.servicExpert.model.Device.DeviceDtoGet;
+import com.kamil.servicExpert.model.Device.DeviceDtoGetDetails;
+import com.kamil.servicExpert.model.Device.DeviceDtoPost;
 
 @WebMvcTest(DeviceService.class)
 @ExtendWith(MockitoExtension.class)
@@ -51,10 +53,12 @@ class DeviceServiceTest {
 	void testFindById() {
 		// Given
 		Long id = 1L;
-		Device device = Device
+		DeviceDtoGetDetails device = DeviceDtoGetDetails
 				.builder()
 				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
+				.customerName("Frank")
+				.dateOfReceipt(new Date())
+				.repaired(false)
 				.build();
 		// When
 		when(deviceService.findById(id)).thenReturn(Optional.of(device));
@@ -79,13 +83,13 @@ class DeviceServiceTest {
 	@Test
 	void testFindByRepairedFalse() {
 		// Given
-		Device device = Device
+		List<DeviceDtoGet> devices = List.of(
+			DeviceDtoGet
 				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
+				.customerName("Frank")
 				.repaired(false)
-				.build();
-		List<Device> devices = List.of(device);
+				.build()
+		);
 		// When
 		when(deviceService.findByRepaired(false)).thenReturn(devices);
 		// Then
@@ -97,13 +101,13 @@ class DeviceServiceTest {
 	@Test
 	void testFindByRepairedTrue() {
 		// Given
-		Device device = Device
+		List<DeviceDtoGet> devices = List.of(
+			DeviceDtoGet
 				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
-				.build();
-		List<Device> devices = List.of(device);
+				.customerName("Frank")
+				.repaired(false)
+				.build()
+		);
 		// When
 		when(deviceService.findByRepaired(true)).thenReturn(devices);
 		// Then
@@ -111,35 +115,30 @@ class DeviceServiceTest {
         assertEquals("Frank", deviceService.findByRepaired(true).get(0).getCustomerName());
         verify(deviceService, times(2)).findByRepaired(true);
 	}
+
 	@Test
 	void testFindByTypeId() {
 		// Given
 		Long id = 1L;
-		Type type = Type
+		List<DeviceDtoGet> devices = List.of(
+			DeviceDtoGet
 				.builder()
-				.id(id)
-				.nameOfType("name")
-				.build();
-		Device device = Device
-				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.type(type)
-				.build();
-		List<Device> devices = List.of(device);
+				.customerName("Frank")
+				.repaired(false)
+				.build()
+		);
 		// When
 		when(deviceService.findByTypeId(id)).thenReturn(devices);
 		// Then
         assertEquals(1, deviceService.findByTypeId(id).size());
         assertEquals("Frank", deviceService.findByTypeId(id).get(0).getCustomerName());
-        assertEquals("name", deviceService.findByTypeId(id).get(0).getType().getNameOfType());
-        verify(deviceService, times(3)).findByTypeId(id);
 	}
+
 	@Test
 	void testFindByTypeIdEmpty() {
 		// Given
 		Long id = 1L;
-		List<Device> devices = List.of();
+		List<DeviceDtoGet> devices = List.of();
 		// When
 		when(deviceService.findByTypeId(id)).thenReturn(devices);
 		// Then
@@ -151,15 +150,16 @@ class DeviceServiceTest {
 	@Test
 	void testFindAll() {
 		// Given
-		Device device = Device
+		List<DeviceDtoGet> devices = List.of(
+			DeviceDtoGet
 				.builder()
-				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
-				.build();
-		List<Device> devices = List.of(device);
+				.customerName("Frank")
+				.repaired(false)
+				.build()
+		);
 		// When
 		when(deviceService.findAll()).thenReturn(devices);
+		// Then
         assertEquals(1, deviceService.findAll().size());
         assertEquals(false, deviceService.findAll().isEmpty());
         verify(deviceService, times(2)).findAll();
@@ -168,9 +168,10 @@ class DeviceServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<Device> devices = List.of();
+		List<DeviceDtoGet> devices = List.of();
 		// When
 		when(deviceService.findAll()).thenReturn(devices);
+		// Then
         assertEquals(0, deviceService.findAll().size());
         assertEquals(true, deviceService.findAll().isEmpty());
         verify(deviceService, times(2)).findAll();
@@ -179,18 +180,22 @@ class DeviceServiceTest {
 	@Test
 	void testSave() {
 		// Given
-		Long id = 1L;
-		Device device = Device
+		DeviceDtoPost device = DeviceDtoPost
 				.builder()
-				.id(id)
 				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
+				.customerName("Frank")
+				.build();
+		DeviceDtoGetDetails deviceDetails = DeviceDtoGetDetails
+				.builder()
+				.customerPhoneNumber(404040404)
+				.customerName("Frank")
+				.dateOfReceipt(new Date())
+				.repaired(false)
 				.build();
 		// When
-		when(deviceService.save(device)).thenReturn(device);
+		when(deviceService.save(device)).thenReturn(deviceDetails);
 		// Then
-        assertEquals(deviceService.save(device), device);
+        assertEquals(deviceService.save(device), deviceDetails);
         verify(deviceService).save(device);
 	}
 
@@ -198,17 +203,22 @@ class DeviceServiceTest {
 	void testCreateDeviceForType() {
 		// Given
 		Long id = 1L;
-		Device device = Device
+		DeviceDtoPost device = DeviceDtoPost
 				.builder()
-				.id(id)
 				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
+				.customerName("Frank")
+				.build();
+		DeviceDtoGetDetails deviceDetails = DeviceDtoGetDetails
+				.builder()
+				.customerPhoneNumber(404040404)
+				.customerName("Frank")
+				.dateOfReceipt(new Date())
+				.repaired(false)
 				.build();
 		// When
-		when(deviceService.createDeviceForType(id, device)).thenReturn(device);
+		when(deviceService.createDeviceForType(id, device)).thenReturn(deviceDetails);
 		// Then
-        assertEquals(deviceService.createDeviceForType(id, device), device);
+        assertEquals(deviceService.createDeviceForType(id, device), deviceDetails);
         verify(deviceService).createDeviceForType(id, device);
 	}
 
@@ -216,42 +226,49 @@ class DeviceServiceTest {
 	void testUpdateDevice() {
 		// Given
 		Long id = 1L;
-		Device device = Device
+		DeviceDtoPost device = DeviceDtoPost
 				.builder()
-				.id(id)
 				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank")
-				.repaired(true)
+				.customerName("Frank")
 				.build();
-		Device updatedDevice = Device
+		DeviceDtoGetDetails deviceDetails = DeviceDtoGetDetails
 				.builder()
-				.id(id)
 				.customerPhoneNumber(404040404)
-				.nameOfCustomer("Frank2")
-				.repaired(true)
+				.customerName("Frank2")
+				.dateOfReceipt(new Date())
+				.repaired(false)
 				.build();
 		// When
-		when(deviceService.updateDevice(id, device)).thenReturn(updatedDevice);
+		when(deviceService.updateDevice(id, device)).thenReturn(deviceDetails);
 		// Then
-        assertEquals(deviceService.updateDevice(id, device), updatedDevice);
+        assertEquals(deviceService.updateDevice(id, device), deviceDetails);
         verify(deviceService).updateDevice(id, device);
 	}
 
 	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		deviceService.deleteById(1L);
 		verify(deviceService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		deviceService.deleteAll();
 		verify(deviceService).deleteAll();
 	}
 
 	@Test
 	void testDeleteByTypeId() {
+		// Given
 		Long id = 1L;
+		// When
+		// Then
 		deviceService.deleteByTypeId(id);
 		verify(deviceService).deleteByTypeId(id);
 	}

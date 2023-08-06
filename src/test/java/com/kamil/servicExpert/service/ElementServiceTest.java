@@ -15,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.kamil.servicExpert.db.model.Element;
+import com.kamil.servicExpert.model.Element.ElementDtoGet;
+import com.kamil.servicExpert.model.Element.ElementDtoGetDetails;
+import com.kamil.servicExpert.model.Element.ElementDtoPost;
 
 @WebMvcTest(ElementService.class)
 @ExtendWith(MockitoExtension.class)
@@ -51,13 +53,12 @@ class ElementServiceTest {
 	void testFindById() {
 		// Given
 		Long id = 1L;
-		Element element = Element
+		ElementDtoGetDetails element = ElementDtoGetDetails
 				.builder()
-				.id(1L)
 				.quantity(1)
 				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
 				.build();
 		// When
 		when(elementService.findById(id)).thenReturn(Optional.of(element));
@@ -83,15 +84,12 @@ class ElementServiceTest {
 	void testFindByTypeId() {
 		// Given
 		Long id = 1L;
-		Element element = Element
+		List<ElementDtoGet> elements = List.of(ElementDtoGet
 				.builder()
-				.id(1L)
 				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		List<Element> elements = List.of(element);
+				.elementName("nameOfElement")
+				.build()
+		);
 		// When
 		when(elementService.findByTypeId(id)).thenReturn(elements);
 		// Then
@@ -102,15 +100,12 @@ class ElementServiceTest {
 	@Test
 	void testFindAll() {
 		// Given
-		Element element = Element
+		List<ElementDtoGet> elements = List.of(ElementDtoGet
 				.builder()
-				.id(1L)
 				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		List<Element> elements = List.of(element);
+				.elementName("nameOfElement")
+				.build()
+		);
 		// When
 		when(elementService.findAll()).thenReturn(elements);
         assertEquals(1, elementService.findAll().size());
@@ -121,7 +116,7 @@ class ElementServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<Element> elements = List.of();
+		List<ElementDtoGet> elements = List.of();
 		// When
 		when(elementService.findAll()).thenReturn(elements);
         assertEquals(0, elementService.findAll().size());
@@ -132,18 +127,24 @@ class ElementServiceTest {
 	@Test
 	void testSave() {
 		// Given
-		Element element = Element
+		ElementDtoPost element = ElementDtoPost
 				.builder()
-				.id(1L)
 				.quantity(1)
 				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
+				.build();
+		ElementDtoGetDetails elementDetails = ElementDtoGetDetails
+				.builder()
+				.quantity(1)
+				.criticalQuantity(2)
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
 				.build();
 		// When
-		when(elementService.save(element)).thenReturn(element);
+		when(elementService.save(element)).thenReturn(elementDetails);
 		// Then
-        assertEquals(elementService.save(element), element);
+        assertEquals(elementService.save(element), elementDetails);
         verify(elementService).save(element);
 	}
 
@@ -151,18 +152,24 @@ class ElementServiceTest {
 	void testCreateElementForType() {
 		// Given
 		Long id = 1L;
-		Element element = Element
+		ElementDtoPost element = ElementDtoPost
 				.builder()
-				.id(1L)
 				.quantity(1)
 				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
+				.build();
+		ElementDtoGetDetails elementDetails = ElementDtoGetDetails
+				.builder()
+				.quantity(1)
+				.criticalQuantity(2)
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
 				.build();
 		// When
-		when(elementService.createElementForType(id, element)).thenReturn(element);
+		when(elementService.createElementForType(id, element)).thenReturn(elementDetails);
 		// Then
-        assertEquals(elementService.createElementForType(id, element), element);
+        assertEquals(elementService.createElementForType(id, element), elementDetails);
         verify(elementService).createElementForType(id, element);
 	}
 
@@ -170,71 +177,51 @@ class ElementServiceTest {
 	void testUpdateElement() {
 		// Given
 		Long id = 1L;
-		Element element = Element
+		ElementDtoPost element = ElementDtoPost
 				.builder()
-				.id(1L)
 				.quantity(1)
 				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
+				.elementName("nameOfElement")
+				.elementPrice(BigDecimal.valueOf(20))
 				.build();
-		Element updatedElement = Element
+		ElementDtoGetDetails elementDetails = ElementDtoGetDetails
 				.builder()
-				.id(1L)
 				.quantity(1)
 				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
+				.elementName("nameOfUpdated")
+				.elementPrice(BigDecimal.valueOf(20))
 				.build();
 		// When
-		when(elementService.updateElement(id, element)).thenReturn(updatedElement);
+		when(elementService.updateElement(id, element)).thenReturn(elementDetails);
 		// Then
-        assertEquals(elementService.updateElement(id, element), updatedElement);
-        verify(elementService).updateElement(id, element);
-	}
-
-	@Test
-	void testAddElementToRepair() {
-		// Given
-		Long id = 1L;
-		Element element = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		Element updatedElement = Element
-				.builder()
-				.id(1L)
-				.quantity(1)
-				.criticalQuantity(2)
-				.nameOfElement("nameOfElement")
-				.priceOfElement(BigDecimal.valueOf(20))
-				.build();
-		// When
-		when(elementService.updateElement(id, element)).thenReturn(updatedElement);
-		// Then
-        assertEquals(elementService.updateElement(id, element), updatedElement);
+        assertEquals(elementService.updateElement(id, element), elementDetails);
         verify(elementService).updateElement(id, element);
 	}
 
 	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		elementService.deleteById(1L);
 		verify(elementService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		elementService.deleteAll();
 		verify(elementService).deleteAll();
 	}
 
 	@Test
 	void testDeleteByTypeId() {
+		// Given
 		Long id = 1L;
+		// When
+		// Then
 		elementService.deleteByTypeId(id);
 		verify(elementService).deleteByTypeId(id);
 	}

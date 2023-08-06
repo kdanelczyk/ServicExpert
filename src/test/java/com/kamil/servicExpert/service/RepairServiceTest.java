@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.kamil.servicExpert.db.model.Repair;
+import com.kamil.servicExpert.model.Repair.RepairDtoGet;
+import com.kamil.servicExpert.model.Repair.RepairDtoGetDetails;
+import com.kamil.servicExpert.model.Repair.RepairDtoPost;
 
 @WebMvcTest(RepairService.class)
 @ExtendWith(MockitoExtension.class)
@@ -52,10 +55,13 @@ class RepairServiceTest {
 	void testFindById() {
 		// Given
 		Long id = 1L;
-		Repair repair = Repair
+		RepairDtoGetDetails repair = RepairDtoGetDetails
 				.builder()
-				.note("note of repair")
+				.dateCreated(new Date())
 				.cost(BigDecimal.valueOf(20))
+				.note("note of repair")
+				.device(null)
+				.usedElements(new ArrayList<>())
 				.build();
 		// When
 		when(repairService.findById(id)).thenReturn(Optional.of(repair));
@@ -80,12 +86,12 @@ class RepairServiceTest {
 	void testFindByDeviceId() {
 		// Given
 		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
+		List<RepairDtoGet> repairs = List.of(RepairDtoGet
+			.builder()
+			.dateCreated(new Date())
+			.cost(BigDecimal.valueOf(20))
+			.build()
+		);
 		// When
 		when(repairService.findByDeviceId(id)).thenReturn(repairs);
 		// Then
@@ -98,12 +104,12 @@ class RepairServiceTest {
 	void testFindByUserId() {
 		// Given
 		Long id = 1L;
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
+		List<RepairDtoGet> repairs = List.of(RepairDtoGet
+			.builder()
+			.dateCreated(new Date())
+			.cost(BigDecimal.valueOf(20))
+			.build()
+		);
 		// When
 		when(repairService.findByUserId(id)).thenReturn(repairs);
 		// Then
@@ -116,7 +122,7 @@ class RepairServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<Repair> repairs = new ArrayList<>();
+		List<RepairDtoGet> repairs = new ArrayList<>();
 		// When
 		when(repairService.findAll()).thenReturn(repairs);
 		// Then
@@ -127,12 +133,12 @@ class RepairServiceTest {
 	@Test
 	void testFindAllNotEmpty() {
 		// Given
-		Repair repair = Repair
-				.builder()
-				.note("note of repair")
-				.cost(BigDecimal.valueOf(20))
-				.build();
-		List<Repair> repairs = List.of(repair);
+		List<RepairDtoGet> repairs = List.of(RepairDtoGet
+			.builder()
+			.dateCreated(new Date())
+			.cost(BigDecimal.valueOf(20))
+			.build()
+		);
 		// When
 		when(repairService.findAll()).thenReturn(repairs);
 		// Then
@@ -144,15 +150,23 @@ class RepairServiceTest {
 	@Test
 	void testSave() {
 		// Given
-		Repair repair = Repair
+		RepairDtoPost repair = RepairDtoPost
 				.builder()
 				.note("note of repair")
 				.cost(BigDecimal.valueOf(20))
 				.build();
+		RepairDtoGetDetails repairDetails = RepairDtoGetDetails
+				.builder()
+				.dateCreated(new Date())
+				.cost(BigDecimal.valueOf(20))
+				.note("note of repair")
+				.device(null)
+				.usedElements(new ArrayList<>())
+				.build();
 		// When
-		when(repairService.save(repair)).thenReturn(repair);
+		when(repairService.save(repair)).thenReturn(repairDetails);
 		// Then
-        assertEquals(repairService.save(repair), repair);
+        assertEquals(repairService.save(repair), repairDetails);
         verify(repairService).save(repair);
 	}
 
@@ -160,15 +174,23 @@ class RepairServiceTest {
 	void testCreateRepair() {
 		// Given
 		Long id = 1L;
-		Repair repair = Repair
+		RepairDtoPost repair = RepairDtoPost
 				.builder()
 				.note("note of repair")
 				.cost(BigDecimal.valueOf(20))
 				.build();
+		RepairDtoGetDetails repairDetails = RepairDtoGetDetails
+				.builder()
+				.dateCreated(new Date())
+				.cost(BigDecimal.valueOf(20))
+				.note("note of repair")
+				.device(null)
+				.usedElements(new ArrayList<>())
+				.build();
 		// When
-		when(repairService.createRepair(id, id, repair)).thenReturn(repair);
+		when(repairService.createRepair(id, id, repair)).thenReturn(repairDetails);
 		// Then
-        assertEquals(repairService.createRepair(id, id, repair), repair);
+        assertEquals(repairService.createRepair(id, id, repair), repairDetails);
         verify(repairService).createRepair(id, id, repair);
 	}
 
@@ -176,37 +198,49 @@ class RepairServiceTest {
 	void testUpdateRepair() {
 		// Given
 		Long id = 1L;
-		Repair repair = Repair
+		RepairDtoPost repair = RepairDtoPost
 				.builder()
 				.note("note of repair")
 				.cost(BigDecimal.valueOf(20))
 				.build();
-		Repair updatedRepair = Repair
+		RepairDtoGetDetails repairDetails = RepairDtoGetDetails
 				.builder()
-				.note("note of repairUpdated")
-				.cost(BigDecimal.valueOf(30))
+				.dateCreated(new Date())
+				.cost(BigDecimal.valueOf(20))
+				.note("updated note of repair")
+				.device(null)
+				.usedElements(new ArrayList<>())
 				.build();
 		// When
-		when(repairService.updateRepair(id, repair)).thenReturn(updatedRepair);
+		when(repairService.updateRepair(id, repair)).thenReturn(repairDetails);
 		// Then
-        assertEquals(repairService.updateRepair(id, repair), updatedRepair);
+        assertEquals(repairService.updateRepair(id, repair), repairDetails);
         verify(repairService).updateRepair(id, repair);
 	}
 
 	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		repairService.deleteById(1L);
 		verify(repairService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		repairService.deleteAll();
 		verify(repairService).deleteAll();
 	}
 
 	@Test
 	void testDeleteByDeviceId() {
+		// Given
+		// When
+		// Then
 		repairService.deleteByDeviceId(1L);
 		verify(repairService).deleteByDeviceId(1L);
 	}

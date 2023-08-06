@@ -14,7 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import com.kamil.servicExpert.db.model.Type;
+import com.kamil.servicExpert.model.Type.TypeDtoGet;
+import com.kamil.servicExpert.model.Type.TypeDtoGetDetails;
+import com.kamil.servicExpert.model.Type.TypeDtoPost;
 
 @WebMvcTest(TypeService.class)
 @ExtendWith(MockitoExtension.class)
@@ -50,9 +52,10 @@ class TypeServiceTest {
 	void testFindById() {
 		// Given
 		Long id = 1L;
-		Type type = Type
+		TypeDtoGetDetails type = TypeDtoGetDetails
 				.builder()
-				.nameOfType("name")
+				.typeName("name")
+				.elements(new ArrayList<>())
 				.build();
 		// When
 		when(typeService.findById(id)).thenReturn(Optional.of(type));
@@ -76,7 +79,7 @@ class TypeServiceTest {
 	@Test
 	void testFindAllEmpty() {
 		// Given
-		List<Type> types = new ArrayList<>();
+		List<TypeDtoGet> types = new ArrayList<>();
 		// When
 		when(typeService.findAll()).thenReturn(types);
 		// Then
@@ -87,11 +90,11 @@ class TypeServiceTest {
 	@Test
 	void testFindAllNotEmpty() {
 		// Given
-		Type type = Type
+		List<TypeDtoGet> types = List.of(TypeDtoGet
 				.builder()
-				.nameOfType("name")
-				.build();
-		List<Type> types = List.of(type);
+				.typeName("name")
+				.build()
+		);
 		// When
 		when(typeService.findAll()).thenReturn(types);
 		// Then
@@ -102,31 +105,39 @@ class TypeServiceTest {
 
 	@Test
 	void testSave() {
-		// Given
-		Long id = 1L;
-		Type type = Type
+		// Given;
+		TypeDtoPost type = TypeDtoPost
 				.builder()
-				.id(id)
-				.nameOfType("name")
+				.typeName("name")
+				.build();
+		TypeDtoGetDetails typeDetails = TypeDtoGetDetails
+				.builder()
+				.typeName("name")
+				.elements(new ArrayList<>())
 				.build();
 		// When
-		when(typeService.save(type)).thenReturn(type);
+		when(typeService.save(type)).thenReturn(typeDetails);
 		// Then
-        assertEquals(typeService.save(type), type);
+        assertEquals(typeService.save(type), typeDetails);
         verify(typeService).save(type);
 	}
 
 	@Test
 	void testCreateType() {
 		// Given
-		Type type = Type
+		TypeDtoPost type = TypeDtoPost
 				.builder()
-				.nameOfType("name")
+				.typeName("name")
+				.build();
+		TypeDtoGetDetails typeDetails = TypeDtoGetDetails
+				.builder()
+				.typeName("name")
+				.elements(new ArrayList<>())
 				.build();
 		// When
-		when(typeService.createType(type)).thenReturn(type);
+		when(typeService.createType(type)).thenReturn(typeDetails);
 		// Then
-        assertEquals(typeService.createType(type), type);
+        assertEquals(typeService.createType(type), typeDetails);
         verify(typeService).createType(type);
 	}
 
@@ -134,30 +145,36 @@ class TypeServiceTest {
 	void testUpdateType() {
 		// Given
 		Long id = 1L;
-		Type type = Type
+		TypeDtoPost type = TypeDtoPost
 				.builder()
-				.id((long) 1)
-				.nameOfType("name")
+				.typeName("name")
 				.build();
-		Type updatedType = Type
+		TypeDtoGetDetails typeDetails = TypeDtoGetDetails
 				.builder()
-				.nameOfType("name2")
+				.typeName("updated name")
+				.elements(new ArrayList<>())
 				.build();
 		// When
-		when(typeService.updateType(id, type)).thenReturn(updatedType);
+		when(typeService.updateType(id, type)).thenReturn(typeDetails);
 		// Then
-        assertEquals(typeService.updateType(id, type), updatedType);
+        assertEquals(typeService.updateType(id, type), typeDetails);
         verify(typeService).updateType(id, type);
 	}
 
 	@Test
 	void testDeleteById() {
+		// Given
+		// When
+		// Then
 		typeService.deleteById(1L);
 		verify(typeService).deleteById(1L);
 	}
 
 	@Test
 	void testDeleteAll() {
+		// Given
+		// When
+		// Then
 		typeService.deleteAll();
 		verify(typeService).deleteAll();
 	}
