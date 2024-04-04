@@ -1,5 +1,7 @@
 package com.kamil.servicExpert.security;
 
+import static org.springframework.security.config.Customizer.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,14 +66,13 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-				.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and().authorizeRequests()
-				.antMatchers("/api/auth/**").permitAll()
-				.antMatchers("/api/test/**").permitAll()
-				.anyRequest()
-				.authenticated();
+        http.cors(withDefaults()).csrf(csrf -> csrf.disable()).exceptionHandling(handling -> handling.authenticationEntryPoint(authEntryPointJwt))
+                .sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeRequests(requests -> requests
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/test/**").permitAll()
+                .anyRequest()
+                .authenticated());
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
